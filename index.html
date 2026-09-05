@@ -152,7 +152,7 @@
             background: #b31412;
         }
 
-        /* Halaman Laporan 1 & 2 Persis Gambar Referensi */
+        /* Halaman Laporan 1 & 2 */
         .report-page {
             background: white;
             width: 100%;
@@ -179,9 +179,9 @@
             vertical-align: top;
         }
 
-        /* Penambahan 1px tinggi pada kolom tanda tangan petugas */
+        /* Penambahan 2px tinggi pada kolom tanda tangan petugas */
         .report-table td:nth-child(4) {
-            height: 33px; 
+            height: 34px; 
         }
 
         .section-header {
@@ -194,7 +194,7 @@
             padding: 6px;
         }
 
-        /* Struktur Kotak Bagian B Sesuai Permintaan (Diperlebar ke bawah hingga kotak pejabat berada di bawah halaman) */
+        /* Struktur Kotak Bagian B */
         .box-section-urutan-container {
             border: 1px solid #000;
             margin-bottom: 15px;
@@ -213,7 +213,7 @@
             padding: 4px 10px;
         }
 
-        /* Struktur Kotak Bagian C Sesuai Gambar */
+        /* Struktur Kotak Bagian C */
         .box-section-pejabat-container {
             border: 1px solid #000;
             margin-bottom: 15px;
@@ -225,7 +225,7 @@
             font-size: 13px;
         }
 
-        /* Halaman Kedua khusus Dokumentasi (Tanpa garis tengah antar kotak, tanpa placeholder teks jika kosong) */
+        /* Halaman Kedua khusus Dokumentasi (Kotak penuh sampai batas bawah halaman) */
         .page-break {
             page-break-before: always;
             margin-top: 40px;
@@ -233,26 +233,29 @@
 
         .doc-container {
             border: 1px solid #000;
+            min-height: 920px;
             display: flex;
             flex-direction: column;
+            justify-content: flex-start;
+            padding: 15px;
         }
 
         .doc-box-item {
-            border-bottom: none; /* Garis tengah dihilangkan */
-            min-height: 290px;
+            min-height: 280px;
             padding: 10px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             position: relative;
+            margin-bottom: 10px;
         }
 
         .photo-card {
             text-align: center;
             max-width: 100%;
             max-height: 100%;
-            margin: 10px 0;
+            margin: 5px 0;
         }
 
         .photo-card img {
@@ -436,14 +439,12 @@
                 </div>
             </div>
 
-            <!-- HALAMAN 2: DOKUMENTASI (Landscape) -->
+            <!-- HALAMAN 2: DOKUMENTASI (Landscape, Kotak Utuh Sampai Bawah Halaman) -->
             <div class="page-break"></div>
             <div class="report-page">
                 <div class="section-header" style="margin-bottom: 0;">D. DOKUMENTASI</div>
-                <div class="doc-container">
-                    <div id="docBoxContainer" class="doc-box-item">
-                        <!-- Konten foto dokumentasi akan dimuat secara dinamis tanpa teks placeholder jika kosong -->
-                    </div>
+                <div class="doc-container" id="docBoxContainer">
+                    <!-- Foto akan dimuat secara dinamis di dalam kotak besar ini -->
                 </div>
             </div>
 
@@ -622,7 +623,7 @@
             }
         }
 
-        // Pengaturan Tata Letak Foto Halaman 2 (Tanpa teks placeholder jika kosong, hanya menampilkan foto yang diunggah)
+        // Pengaturan Tata Letak Foto Halaman 2
         function handleImageUpload(event) {
             const files = event.target.files;
             const container = document.getElementById('docBoxContainer');
@@ -637,6 +638,9 @@
             Array.from(files).forEach((file, index) => {
                 const reader = new FileReader();
                 reader.onload = function(e) {
+                    const itemDiv = document.createElement('div');
+                    itemDiv.className = 'doc-box-item';
+
                     const card = document.createElement('div');
                     card.className = 'photo-card';
 
@@ -651,7 +655,8 @@
 
                     card.appendChild(img);
                     card.appendChild(caption);
-                    container.appendChild(card);
+                    itemDiv.appendChild(card);
+                    container.appendChild(itemDiv);
                 }
                 reader.readAsDataURL(file);
             });

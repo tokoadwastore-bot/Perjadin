@@ -177,11 +177,11 @@
             letter-spacing: 0.5px;
         }
 
-        /* Memastikan seluruh elemen lembar laporan memiliki lebar 100% yang seragam */
-        .report-table,
-        .section-header,
-        .box-section-urutan-container,
-        .box-section-pejabat-container {
+        /* Penyelarasan lebar kotak khusus di dalam laporan agar rapi rata */
+        .report-page .report-table,
+        .report-page .section-header,
+        .report-page .box-section-urutan-container,
+        .report-page .box-section-pejabat-container {
             width: 100%;
             box-sizing: border-box;
         }
@@ -856,8 +856,8 @@
                 const emptyDiv = document.createElement('div');
                 emptyDiv.className = 'doc-box-item';
                 emptyDiv.style.display = 'flex';
-                emptyDiv.style.alignItems: 'center';
-                emptyDiv.style.justifyContent: 'center';
+                emptyDiv.style.alignItems = 'center';
+                emptyDiv.style.justifyContent = 'center';
                 emptyDiv.style.color = '#aaa';
                 emptyDiv.style.fontSize = '12px';
                 emptyDiv.style.background = '#fafafa';

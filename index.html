@@ -257,7 +257,6 @@
             border-bottom: 1px solid #000;
             width: 100%;
             overflow: hidden;
-            /* Responsif tinggi menyesuaikan proporsi gambar dan ukuran layar HP */
             aspect-ratio: 4 / 3; 
             max-height: 450px;
         }
@@ -469,7 +468,6 @@
                     </select>
                 </div>
 
-                <!-- Hidden input untuk menyimpan hasil gabungan teks tujuan yang dikirim ke script -->
                 <input type="hidden" id="inputTujuan">
 
                 <div class="form-group">
@@ -568,7 +566,7 @@
     </div>
 
     <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwQ-bmfkstTg4Q1_qB6ZJn66hs77c3zRAyt9gQaT_xsLJEYL5U8imkMsHmzO5VUY3II/exec";
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwuFX0M0ghBciEJzZRUqWZ5YpdNq9ESH7Mz7ACeB9tzDOJR6azfcDtZMd2FCHSYVPm5/exec";
         let loggedInUsername = "";
         let uploadedPhotos = []; 
 
@@ -637,7 +635,6 @@
             const msgDiv = document.getElementById('regMsg');
             const btn = document.getElementById('btnReg');
 
-            // Memastikan password selalu dibersihkan dan dipaksa hanya angka biasa sebelum dikirim
             password = password.replace(/\D/g, '');
 
             if (!/^\d+$/.test(password)) {
@@ -682,7 +679,6 @@
             const msgDiv = document.getElementById('loginMsg');
             const btn = document.getElementById('btnLogin');
 
-            // Pastikan login juga membersihkan password menjadi angka biasa
             password = password.replace(/\D/g, '');
 
             msgDiv.innerText = "Memeriksa kredensial...";
@@ -826,7 +822,6 @@
 
                 const deleteBtn = document.createElement('button');
                 deleteBtn.className = 'btn-delete-photo no-print';
-                paddingDelete = '&times;';
                 deleteBtn.innerHTML = '&times;';
                 deleteBtn.title = 'Hapus foto ini';
                 deleteBtn.onclick = () => removePhoto(index);

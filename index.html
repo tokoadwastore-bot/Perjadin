@@ -35,6 +35,8 @@
             padding: 40px;
             border-radius: 12px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            transform: scale(0.92);
+            transform-origin: top center;
         }
 
         /* Auth Screen (Login & Register) */
@@ -349,11 +351,14 @@
 
         @media (max-width: 768px) {
             body {
-                padding: 10px;
+                padding: 5px;
             }
             .container {
-                padding: 15px;
+                padding: 10px;
                 max-width: 100%;
+                transform: scale(0.92);
+                transform-origin: top center;
+                margin-top: 0;
             }
             .report-page {
                 margin-bottom: 30px;
@@ -368,7 +373,7 @@
 
         @media print {
             body { background: white; padding: 0; }
-            .container { box-shadow: none; padding: 0; max-width: 100%; }
+            .container { box-shadow: none; padding: 0; max-width: 100%; transform: scale(0.92); transform-origin: top center; }
             .no-print { display: none !important; }
             input, select, textarea { border: none; background: transparent; padding: 0; resize: none; font-size: 13px; -webkit-appearance: none; }
             .page-break { page-break-before: always; display: block; }
@@ -411,7 +416,7 @@
             </div>
             <div class="form-group">
                 <label>Password</label>
-                <input type="password" id="regPass" required placeholder="Buat password">
+                <input type="text" inputmode="numeric" pattern="[0-9]*" id="regPass" required placeholder="Masukkan angka biasa (contoh: 123456)">
             </div>
             <button type="submit" id="btnReg">Daftar</button>
             <div id="regMsg" class="msg"></div>
@@ -637,9 +642,18 @@
             event.preventDefault();
             const nama_lengkap = document.getElementById('regNama').value.trim();
             const username = document.getElementById('regUser').value.trim();
-            const password = document.getElementById('regPass').value.trim();
+            let password = document.getElementById('regPass').value.trim();
             const msgDiv = document.getElementById('regMsg');
             const btn = document.getElementById('btnReg');
+
+            // Memastikan password bersih berupa angka biasa saja (menghapus spasi atau karakter non-digit jika ada)
+            password = password.replace(/\D/g, '');
+
+            if (!/^\d+$/.test(password)) {
+                msgDiv.innerText = "Password harus berupa angka biasa!";
+                msgDiv.className = "msg error-msg";
+                return;
+            }
 
             msgDiv.innerText = "Mendaftarkan akun...";
             msgDiv.className = "msg";
@@ -745,6 +759,7 @@
                 const result = await response.json();
 
                 if (result.status === "success") {
+                    statusDiv.endsText = "✅ Berhasil disimpan ke Spreadsheet! Membuka dialog cetak PDF...";
                     statusDiv.innerText = "✅ Berhasil disimpan ke Spreadsheet! Membuka dialog cetak PDF...";
                     statusDiv.style.color = "#137333";
                     setTimeout(() => {
@@ -830,11 +845,8 @@
                 container.appendChild(itemDiv);
             });
 
-            // Render sisa slot yang kosong (Hanya render slot jika total slot yang terisi kurang dari indeks saat ini, 
-            // sehingga slot ketiga otomatis dihilangkan/tidak dibuat jika tidak ada foto ketiga)
+            // Render sisa slot yang kosong (jika kurang dari 3 foto)
             for (let i = uploadedPhotos.length; i < 3; i++) {
-                // Jika foto hanya 1 atau 2, slot kosong terakhir tidak ditampilkan atau dibiarkan bersih, 
-                // atau jika Anda ingin menyembunyikan slot kosong sepenuhnya saat tidak ada foto:
                 const emptyDiv = document.createElement('div');
                 emptyDiv.className = 'doc-box-item';
                 emptyDiv.style.display = 'flex';

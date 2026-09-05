@@ -483,7 +483,7 @@
     </div>
 
     <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyAM6r0dKj4ymx32IF3swO08vEkM9viKoU2qpYNJuZ2BggC7VV_c46X6zRLY6FaSFs/exec";
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwQ-bmfkstTg4Q1_qB6ZJn66hs77c3zRAyt9gQaT_xsLJEYL5U8imkMsHmzO5VUY3II/exec";
         let loggedInUsername = "";
 
         function formatTanggalIndonesia(dateString) {
@@ -514,6 +514,9 @@
         }
 
         function switchAuthMode(mode) {
+            document.getElementById('loginMsg').innerText = "";
+            document.getElementById('regMsg').innerText = "";
+            
             if (mode === 'register') {
                 document.getElementById('login-section').style.display = 'none';
                 document.getElementById('register-section').style.display = 'block';
@@ -545,7 +548,10 @@
                 if (result.status === "success") {
                     msgDiv.innerText = result.message;
                     msgDiv.className = "msg success-msg";
-                    setTimeout(() => switchAuthMode('login'), 1500);
+                    setTimeout(() => {
+                        switchAuthMode('login');
+                        document.getElementById('registerForm').reset();
+                    }, 1500);
                 } else {
                     msgDiv.innerText = result.message;
                     msgDiv.className = "msg error-msg";

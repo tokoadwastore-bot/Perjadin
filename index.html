@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aplikasi Laporan Kegiatan & Visum Pengawasan</title>
+    <title>"Aladin" Aplikasi Laporan Perjadin</title>
     <style>
         :root {
             --primary-color: #1a73e8;
@@ -135,6 +135,13 @@
             margin-bottom: 20px;
             border-bottom: 2px solid #ccc;
             padding-bottom: 10px;
+        }
+
+        .app-brand {
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 4px;
         }
 
         .user-info {
@@ -327,7 +334,8 @@
 
     <!-- HALAMAN LOGIN -->
     <div id="login-section" class="auth-container">
-        <h2>🔐 Login Sistem</h2>
+        <h2>✨ "Aladin"</h2>
+        <p style="text-align: center; font-size: 14px; color: #5f6368; margin-top: -15px; margin-bottom: 25px;">Aplikasi Laporan Perjadin</p>
         <form id="loginForm" onsubmit="handleLogin(event)">
             <div class="form-group">
                 <label>Username</label>
@@ -346,6 +354,7 @@
     <!-- HALAMAN REGISTER -->
     <div id="register-section" class="auth-container" style="display: none;">
         <h2>📝 Daftar Akun Baru</h2>
+        <p style="text-align: center; font-size: 14px; color: #5f6368; margin-top: -15px; margin-bottom: 25px;">"Aladin" - Aplikasi Laporan Perjadin</p>
         <form id="registerForm" onsubmit="handleRegister(event)">
             <div class="form-group">
                 <label>Nama Lengkap</label>
@@ -368,7 +377,10 @@
     <!-- HALAMAN UTAMA FORMULIR & LAPORAN -->
     <div id="app-section" class="container">
         <div class="header-app no-print">
-            <div class="user-info">👤 Petugas: <b id="displayUser">Admin</b></div>
+            <div>
+                <div class="app-brand">✨ "Aladin"</div>
+                <div class="user-info">Aplikasi Laporan Perjadin | Petugas: <b id="displayUser">Admin</b></div>
+            </div>
             <button class="btn-logout" onclick="handleLogout()">Logout</button>
         </div>
 

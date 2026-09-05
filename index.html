@@ -171,27 +171,27 @@
             text-align: center;
             font-weight: bold;
             font-size: 16px;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             letter-spacing: 0.5px;
         }
 
         .report-table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
         }
 
         .report-table th, .report-table td {
             border: 1px solid #000;
-            padding: 8px 10px;
+            padding: 6px 8px;
             font-size: 13px;
             vertical-align: top;
         }
 
         .report-table td:nth-child(4) {
-            height: 55px; 
-            padding-top: 12px;
-            padding-bottom: 12px;
+            height: 45px; 
+            padding-top: 8px;
+            padding-bottom: 8px;
         }
 
         .section-header {
@@ -201,58 +201,53 @@
             text-align: center;
             font-weight: bold;
             font-size: 13px;
-            padding: 6px;
+            padding: 5px;
         }
 
         .box-section-urutan-container {
             border: 1px solid #000;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
         }
 
         .box-section-urutan-main {
-            min-height: 440px;
-            padding: 10px;
+            min-height: 280px;
+            padding: 8px 10px;
             text-align: justify;
             font-size: 13px;
         }
 
         .box-section-urutan-sub {
             border-top: 1px solid #000;
-            min-height: 25px;
-            padding: 4px 10px;
+            min-height: 22px;
+            padding: 3px 10px;
         }
 
         .box-section-pejabat-container {
             border: 1px solid #000;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
         }
 
         .box-section-pejabat-main {
-            min-height: 90px;
-            padding: 10px;
+            min-height: 70px;
+            padding: 8px 10px;
             font-size: 13px;
         }
 
         .page-break {
             page-break-before: always;
-            margin-top: 40px;
+            margin-top: 30px;
         }
 
         /* Bagian Dokumentasi Dinamis Sesuai Jumlah Foto */
         .doc-container {
             border: 1px solid #000;
-            height: 870px;
-            max-height: 870px;
+            min-height: auto;
             display: flex;
             flex-direction: column;
-            justify-content: stretch;
-            padding: 0; 
-            overflow: hidden;
             background-color: #fdfdfd;
         }
 
         .doc-box-item {
-            flex: 1;
             padding: 0;
             display: flex;
             flex-direction: column;
@@ -262,6 +257,9 @@
             border-bottom: 1px solid #000;
             width: 100%;
             overflow: hidden;
+            /* Responsif tinggi menyesuaikan proporsi gambar dan ukuran layar HP */
+            aspect-ratio: 4 / 3; 
+            max-height: 450px;
         }
 
         .doc-box-item:last-child {
@@ -283,15 +281,15 @@
             display: block;
             width: 100%;
             height: 100%;
-            object-fit: cover; 
+            object-fit: contain; 
             object-position: center;
-            background-color: transparent;
+            background-color: #f0f0f0;
             margin: 0;
         }
 
         .photo-caption {
             position: absolute;
-            bottom: 4px;
+            bottom: 6px;
             left: 8px;
             background: rgba(255, 255, 255, 0.9);
             padding: 2px 8px;
@@ -328,7 +326,7 @@
         .action-buttons {
             display: flex;
             gap: 15px;
-            margin-top: 30px;
+            margin-top: 25px;
         }
 
         .btn-print {
@@ -351,12 +349,12 @@
                 padding: 5px;
             }
             .container {
-                padding: 10px;
+                padding: 12px;
                 max-width: 100%;
             }
             .report-page {
-                margin-bottom: 20px;
-                padding-bottom: 10px;
+                margin-bottom: 15px;
+                padding-bottom: 5px;
             }
         }
 
@@ -367,7 +365,6 @@
             input, select, textarea { border: none; background: transparent; padding: 0; resize: none; font-size: 13px; -webkit-appearance: none; }
             .page-break { page-break-before: always; display: block; }
             
-            /* Penyesuaian responsif otomatis untuk cetak HP / mobile browser agar pas di lembar cetak */
             @page {
                 size: A4 portrait;
                 margin: 10mm;
@@ -410,7 +407,7 @@
                 <input type="text" id="regUser" required placeholder="Buat username">
             </div>
             <div class="form-group">
-                <label>Password</label>
+                <label>Password (Angka)</label>
                 <input type="text" inputmode="numeric" pattern="[0-9]*" id="regPass" required placeholder="Masukkan angka biasa (contoh: 123456)">
             </div>
             <button type="submit" id="btnReg">Daftar</button>
@@ -536,7 +533,7 @@
                 </table>
 
                 <!-- Bagian B -->
-                <div class="section-header" style="margin-top: 15px;">B. URUTAN KEGIATAN (RINGKASAN HASIL)</div>
+                <div class="section-header" style="margin-top: 10px;">B. URUTAN KEGIATAN (RINGKASAN HASIL)</div>
                 <div class="box-section-urutan-container">
                     <div class="box-section-urutan-main">
                         <span id="previewUrutan" style="white-space: pre-wrap;"></span>
@@ -583,7 +580,6 @@
             return date.toLocaleDateString('id-ID', options);
         }
 
-        // Fungsi menggabungkan pilihan Tujuan dan Jenis Survei secara otomatis
         function updateTujuanGabungan() {
             const jenisSurvei = document.getElementById('inputJenisSurvei').value;
             const tujuanPilih = document.getElementById('inputTujuanPilih').value;
@@ -641,7 +637,7 @@
             const msgDiv = document.getElementById('regMsg');
             const btn = document.getElementById('btnReg');
 
-            // Memastikan password bersih berupa angka biasa saja
+            // Memastikan password selalu dibersihkan dan dipaksa hanya angka biasa sebelum dikirim
             password = password.replace(/\D/g, '');
 
             if (!/^\d+$/.test(password)) {
@@ -682,9 +678,12 @@
         async function handleLogin(event) {
             event.preventDefault();
             const username = document.getElementById('loginUser').value.trim();
-            const password = document.getElementById('loginPass').value.trim();
+            let password = document.getElementById('loginPass').value.trim();
             const msgDiv = document.getElementById('loginMsg');
             const btn = document.getElementById('btnLogin');
+
+            // Pastikan login juga membersihkan password menjadi angka biasa
+            password = password.replace(/\D/g, '');
 
             msgDiv.innerText = "Memeriksa kredensial...";
             msgDiv.className = "msg";
@@ -811,7 +810,6 @@
             const container = document.getElementById('docBoxContainer');
             container.innerHTML = '';
 
-            // Render HANYA kotak foto yang benar-benar diisi (slot kosong sepenuhnya ditiadakan/dihilangkan)
             uploadedPhotos.forEach((src, index) => {
                 const itemDiv = document.createElement('div');
                 itemDiv.className = 'doc-box-item';
@@ -828,6 +826,7 @@
 
                 const deleteBtn = document.createElement('button');
                 deleteBtn.className = 'btn-delete-photo no-print';
+                paddingDelete = '&times;';
                 deleteBtn.innerHTML = '&times;';
                 deleteBtn.title = 'Hapus foto ini';
                 deleteBtn.onclick = () => removePhoto(index);

@@ -35,8 +35,6 @@
             padding: 40px;
             border-radius: 12px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-            transform: scale(0.92);
-            transform-origin: top center;
         }
 
         /* Auth Screen (Login & Register) */
@@ -240,14 +238,14 @@
             margin-top: 40px;
         }
 
-        /* Bagian Dokumentasi Full-Width dan Utuh Tanpa Terpotong */
+        /* Bagian Dokumentasi Dinamis Sesuai Jumlah Foto */
         .doc-container {
             border: 1px solid #000;
             height: 870px;
             max-height: 870px;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
+            justify-content: stretch;
             padding: 0; 
             overflow: hidden;
             background-color: #fdfdfd;
@@ -285,7 +283,6 @@
             display: block;
             width: 100%;
             height: 100%;
-            max-height: 285px;
             object-fit: cover; 
             object-position: center;
             background-color: transparent;
@@ -356,27 +353,25 @@
             .container {
                 padding: 10px;
                 max-width: 100%;
-                transform: scale(0.92);
-                transform-origin: top center;
-                margin-top: 0;
             }
             .report-page {
-                margin-bottom: 30px;
-                padding-bottom: 20px;
-                border-bottom: 2px dashed #ccc;
-            }
-            .page-break {
-                margin-top: 20px;
-                border-top: none;
+                margin-bottom: 20px;
+                padding-bottom: 10px;
             }
         }
 
         @media print {
             body { background: white; padding: 0; }
-            .container { box-shadow: none; padding: 0; max-width: 100%; transform: scale(0.92); transform-origin: top center; }
+            .container { box-shadow: none; padding: 0; max-width: 100%; width: 100%; }
             .no-print { display: none !important; }
             input, select, textarea { border: none; background: transparent; padding: 0; resize: none; font-size: 13px; -webkit-appearance: none; }
             .page-break { page-break-before: always; display: block; }
+            
+            /* Penyesuaian responsif otomatis untuk cetak HP / mobile browser agar pas di lembar cetak */
+            @page {
+                size: A4 portrait;
+                margin: 10mm;
+            }
         }
     </style>
 </head>
@@ -646,7 +641,7 @@
             const msgDiv = document.getElementById('regMsg');
             const btn = document.getElementById('btnReg');
 
-            // Memastikan password bersih berupa angka biasa saja (menghapus spasi atau karakter non-digit jika ada)
+            // Memastikan password bersih berupa angka biasa saja
             password = password.replace(/\D/g, '');
 
             if (!/^\d+$/.test(password)) {
@@ -759,7 +754,6 @@
                 const result = await response.json();
 
                 if (result.status === "success") {
-                    statusDiv.endsText = "✅ Berhasil disimpan ke Spreadsheet! Membuka dialog cetak PDF...";
                     statusDiv.innerText = "✅ Berhasil disimpan ke Spreadsheet! Membuka dialog cetak PDF...";
                     statusDiv.style.color = "#137333";
                     setTimeout(() => {
@@ -817,7 +811,7 @@
             const container = document.getElementById('docBoxContainer');
             container.innerHTML = '';
 
-            // Render kotak foto yang terisi
+            // Render HANYA kotak foto yang benar-benar diisi (slot kosong sepenuhnya ditiadakan/dihilangkan)
             uploadedPhotos.forEach((src, index) => {
                 const itemDiv = document.createElement('div');
                 itemDiv.className = 'doc-box-item';
@@ -844,20 +838,6 @@
                 itemDiv.appendChild(card);
                 container.appendChild(itemDiv);
             });
-
-            // Render sisa slot yang kosong (jika kurang dari 3 foto)
-            for (let i = uploadedPhotos.length; i < 3; i++) {
-                const emptyDiv = document.createElement('div');
-                emptyDiv.className = 'doc-box-item';
-                emptyDiv.style.display = 'flex';
-                emptyDiv.style.alignItems = 'center';
-                emptyDiv.style.justifyContent = 'center';
-                emptyDiv.style.color = '#aaa';
-                emptyDiv.style.fontSize = '12px';
-                emptyDiv.style.background = '#fafafa';
-                emptyDiv.innerHTML = `<span>[ Kosong - Slot Dokumentasi Foto ${i + 1} ]</span>`;
-                container.appendChild(emptyDiv);
-            }
         }
 
         window.onload = function() {

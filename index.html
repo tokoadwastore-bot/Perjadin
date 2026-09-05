@@ -202,16 +202,21 @@
             font-weight: bold;
             font-size: 13px;
             padding: 5px;
+            width: calc(100% - 2cm);
+            margin-left: auto;
+            margin-right: auto;
         }
 
         .box-section-urutan-container {
             border: 1px solid #000;
             margin-bottom: 10px;
+            width: calc(100% - 2cm);
+            margin-left: auto;
+            margin-right: auto;
         }
 
-        /* Ditambah ruang/tinggi 5 cm ke bawah (approx +190px) */
         .box-section-urutan-main {
-            min-height: 410px;
+            min-height: 470px;
             padding: 8px 10px;
             text-align: justify;
             font-size: 13px;
@@ -239,7 +244,7 @@
             margin-top: 30px;
         }
 
-        /* Bagian Dokumentasi Dinamis Sesuai Jumlah Foto (Diatur agar pas dan tidak terlalu besar di HP) */
+        /* Bagian Dokumentasi Dinamis Sesuai Jumlah Foto */
         .doc-container {
             border: 1px solid #000;
             min-height: auto;
@@ -259,7 +264,7 @@
             width: 100%;
             overflow: hidden;
             aspect-ratio: 4 / 3; 
-            max-height: 320px; /* Dibatasi agar foto di HP tidak terlalu tinggi/besar */
+            max-height: 320px; 
         }
 
         .doc-box-item:last-child {
@@ -440,6 +445,31 @@
                 </div>
 
                 <div class="form-group">
+                    <label>Kecamatan tujuan:</label>
+                    <select id="inputKecamatan" required>
+                        <option value="" disabled selected>-- Pilih Kecamatan tujuan --</option>
+                        <option value="Margasari">Margasari</option>
+                        <option value="Bumijawa">Bumijawa</option>
+                        <option value="Bojong">Bojong</option>
+                        <option value="Balapulang">Balapulang</option>
+                        <option value="Pagerbarang">Pagerbarang</option>
+                        <option value="Lebaksiu">Lebaksiu</option>
+                        <option value="Jatinegara">Jatinegara</option>
+                        <option value="Kedungbanteng">Kedungbanteng</option>
+                        <option value="Pangkah">Pangkah</option>
+                        <option value="Slawi">Slawi</option>
+                        <option value="Dukuhwaru">Dukuhwaru</option>
+                        <option value="Adiwerna">Adiwerna</option>
+                        <option value="Dukuhturi">Dukuhturi</option>
+                        <option value="Talang">Talang</option>
+                        <option value="Tarub">Tarub</option>
+                        <option value="Kramat">Kramat</option>
+                        <option value="Suradadi">Suradadi</option>
+                        <option value="Warureja">Warureja</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
                     <label>Jenis Survei:</label>
                     <select id="inputJenisSurvei" required onchange="updateTujuanGabungan()">
                         <option value="" disabled selected>-- Pilih Jenis Survei --</option>
@@ -467,7 +497,7 @@
                         <option value="" disabled selected>-- Pilih Tujuan --</option>
                         <option value="Pengumpulan data">Pengumpulan data</option>
                         <option value="Pengawasan/ Pemeriksaan Lapangan">Pengawasan/ Pemeriksaan Lapangan</option>
-                        <option value="Supervisi">Supervisi</option>
+                        <option value="Supervisi Lapangan">Supervisi Lapangan</option>
                     </select>
                 </div>
 
@@ -638,7 +668,6 @@
             const msgDiv = document.getElementById('regMsg');
             const btn = document.getElementById('btnReg');
 
-            // Membersihkan password agar berupa string angka murni (misal: "123456")
             password = password.replace(/\D/g, '');
 
             if (!/^\d+$/.test(password)) {
@@ -683,7 +712,6 @@
             const msgDiv = document.getElementById('loginMsg');
             const btn = document.getElementById('btnLogin');
 
-            // Membersihkan input password login agar cocok dengan yang tersimpan di database
             password = password.replace(/\D/g, '');
 
             msgDiv.innerText = "Memeriksa kredensial...";
@@ -738,6 +766,7 @@
                 action: "save_report",
                 username: loggedInUsername,
                 nama: document.getElementById('inputNama').value,
+                kecamatan: document.getElementById('inputKecamatan').value,
                 tujuan: document.getElementById('inputTujuan').value,
                 jadwal: document.getElementById('inputJadwal').value,
                 anggaran_biaya: document.getElementById('inputAnggaranBiaya').value,
@@ -787,10 +816,9 @@
             }
 
             let processedCount = 0;
-            filesToProcess.setItem = filesToProcess.forEach((file) => {
+            filesToProcess.forEach((file) => {
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    // Kompresi/Resize gambar agar tidak terlalu besar di HP
                     resizeImage(e.target.result, 800, 800, 0.7, function(compressedDataUrl) {
                         uploadedPhotos.push(compressedDataUrl);
                         processedCount++;
@@ -805,7 +833,6 @@
             });
         }
 
-        // Fungsi pembantu untuk mengecilkan ukuran resolusi dan kompres foto dari HP
         function resizeImage(base64Str, maxWidth, maxHeight, quality, callback) {
             const img = new Image();
             img.src = base64Str;

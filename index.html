@@ -108,6 +108,11 @@
             background-color: var(--primary-dark);
         }
 
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
         .toggle-link {
             text-align: center;
             margin-top: 15px;
@@ -124,8 +129,8 @@
             margin-top: 10px;
             text-align: center;
         }
-        .error-msg { color: #d93025; }
-        .success-msg { color: #137333; }
+        .error-msg { color: #d93025; font-weight: bold; }
+        .success-msg { color: #137333; font-weight: bold; }
 
         /* App Section */
         #app-section {
@@ -177,7 +182,6 @@
             letter-spacing: 0.5px;
         }
 
-        /* Penyelarasan lebar kotak khusus di dalam laporan agar rapi rata */
         .report-page .report-table,
         .report-page .section-header,
         .report-page .box-section-urutan-container,
@@ -249,7 +253,6 @@
             margin-top: 40px;
         }
 
-        /* Bagian Dokumentasi Full-Width dan Utuh Tanpa Terpotong */
         .doc-container {
             border: 1px solid #000;
             height: 870px;
@@ -360,25 +363,10 @@
         }
 
         @media (max-width: 768px) {
-            body {
-                padding: 5px;
-            }
-            .container {
-                padding: 10px;
-                max-width: 100%;
-                transform: scale(0.92);
-                transform-origin: top center;
-                margin-top: 0;
-            }
-            .report-page {
-                margin-bottom: 30px;
-                padding-bottom: 20px;
-                border-bottom: 2px dashed #ccc;
-            }
-            .page-break {
-                margin-top: 20px;
-                border-top: none;
-            }
+            body { padding: 5px; }
+            .container { padding: 10px; max-width: 100%; transform: scale(0.92); transform-origin: top center; margin-top: 0; }
+            .report-page { margin-bottom: 30px; padding-bottom: 20px; border-bottom: 2px dashed #ccc; }
+            .page-break { margin-top: 20px; border-top: none; }
         }
 
         @media print {
@@ -425,8 +413,8 @@
                 <input type="text" id="regUser" required placeholder="Buat username">
             </div>
             <div class="form-group">
-                <label>Password</label>
-                <input type="text" inputmode="numeric" pattern="[0-9]*" id="regPass" required placeholder="Masukkan angka biasa (contoh: 123456)">
+                <label>Password (Angka)</label>
+                <input type="text" inputmode="numeric" pattern="[0-9]*" id="regPass" required placeholder="Contoh: 123456">
             </div>
             <button type="submit" id="btnReg">Daftar</button>
             <div id="regMsg" class="msg"></div>
@@ -446,7 +434,6 @@
 
         <form id="reportForm" onsubmit="saveReportToCloud(event)">
             
-            <!-- FORMULIR INPUT -->
             <div class="no-print" style="background: #f1f3f4; padding: 20px; border-radius: 8px; margin-bottom: 30px;">
                 <h3 style="margin-bottom: 15px; color: #1a73e8;">Formulir Pengisian Laporan</h3>
                 
@@ -487,7 +474,6 @@
                     </select>
                 </div>
 
-                <!-- Hidden input untuk menyimpan hasil gabungan teks tujuan yang dikirim ke script -->
                 <input type="hidden" id="inputTujuan">
 
                 <div class="form-group">
@@ -516,13 +502,12 @@
                 </div>
 
                 <div class="form-group">
-                    <label>Dokumentasi Foto (Bisa tambah foto satu persatu atau sekaligus, Maksimal 3 foto):</label>
+                    <label>Dokumentasi Foto (Maksimal 3 foto):</label>
                     <input type="file" id="uploadFoto" accept="image/*" multiple onchange="handleImageUpload(event)">
-                    <small style="color: #5f6368; display: block; margin-top: 5px;">*Jika Anda upload 1 foto, lalu upload foto berikutnya, foto akan bertambah (akumulasi) hingga maksimal 3 foto.</small>
                 </div>
             </div>
 
-            <!-- PREVIEW / HASIL CETAK HALAMAN 1 -->
+            <!-- PREVIEW LAPORAN -->
             <div class="report-page">
                 <div class="report-title">LAPORAN KEGIATAN</div>
 
@@ -550,7 +535,6 @@
                     </tr>
                 </table>
 
-                <!-- Bagian B -->
                 <div class="section-header">B. URUTAN KEGIATAN (RINGKASAN HASIL)</div>
                 <div class="box-section-urutan-container">
                     <div class="box-section-urutan-main">
@@ -559,7 +543,6 @@
                     <div class="box-section-urutan-sub"></div>
                 </div>
 
-                <!-- Bagian C -->
                 <div class="section-header">C. PEJABAT DAN TEMPAT YANG DIKUNJUNGI</div>
                 <div class="box-section-pejabat-container">
                     <div class="box-section-pejabat-main">
@@ -568,16 +551,12 @@
                 </div>
             </div>
 
-            <!-- HALAMAN 2: DOKUMENTASI -->
             <div class="page-break"></div>
             <div class="report-page">
                 <div class="section-header" style="margin-bottom: 0;">D. DOKUMENTASI</div>
-                <div class="doc-container" id="docBoxContainer">
-                    <!-- Foto dimuat dinamis -->
-                </div>
+                <div class="doc-container" id="docBoxContainer"></div>
             </div>
 
-            <!-- TOMBOL AKSI -->
             <div class="action-buttons no-print">
                 <button type="submit" class="btn-print">💾 Simpan ke Google Sheets & Cetak PDF</button>
             </div>
@@ -598,7 +577,6 @@
             return date.toLocaleDateString('id-ID', options);
         }
 
-        // Fungsi menggabungkan pilihan Tujuan dan Jenis Survei secara otomatis
         function updateTujuanGabungan() {
             const jenisSurvei = document.getElementById('inputJenisSurvei').value;
             const tujuanPilih = document.getElementById('inputTujuanPilih').value;
@@ -652,19 +630,17 @@
             event.preventDefault();
             const nama_lengkap = document.getElementById('regNama').value.trim();
             const username = document.getElementById('regUser').value.trim();
-            let password = document.getElementById('regPass').value.trim();
+            let password = document.getElementById('regPass').value.trim().replace(/\D/g, '');
             const msgDiv = document.getElementById('regMsg');
             const btn = document.getElementById('btnReg');
 
-            password = password.replace(/\D/g, '');
-
-            if (!/^\d+$/.test(password)) {
-                msgDiv.innerText = "Password harus berupa angka biasa!";
+            if (!username || !password || !nama_lengkap) {
+                msgDiv.innerText = "Semua kolom wajib diisi!";
                 msgDiv.className = "msg error-msg";
                 return;
             }
 
-            msgDiv.innerText = "Mendaftarkan akun...";
+            msgDiv.innerText = "Menghubungkan ke server...";
             msgDiv.className = "msg";
             btn.disabled = true;
 
@@ -673,21 +649,28 @@
                     method: "POST",
                     body: JSON.stringify({ action: "register", nama_lengkap, username, password })
                 });
-                const result = await response.json();
+                
+                const textResult = await response.text();
+                let result;
+                try {
+                    result = JSON.parse(textResult);
+                } catch (err) {
+                    throw new Error("Format respons server tidak valid.");
+                }
 
                 if (result.status === "success") {
-                    msgDiv.innerText = result.message;
+                    msgDiv.innerText = result.message || "Pendaftaran berhasil!";
                     msgDiv.className = "msg success-msg";
                     setTimeout(() => {
                         switchAuthMode('login');
                         document.getElementById('registerForm').reset();
                     }, 1500);
                 } else {
-                    msgDiv.innerText = result.message;
+                    msgDiv.innerText = result.message || "Pendaftaran gagal.";
                     msgDiv.className = "msg error-msg";
                 }
             } catch (error) {
-                msgDiv.innerText = "Terjadi kesalahan koneksi atau deployment belum diatur 'Anyone'.";
+                msgDiv.innerText = "Gagal terhubung. Pastikan Web App Google Script sudah di-deploy dengan akses 'Anyone'.";
                 msgDiv.className = "msg error-msg";
             }
             btn.disabled = false;
@@ -700,6 +683,12 @@
             const msgDiv = document.getElementById('loginMsg');
             const btn = document.getElementById('btnLogin');
 
+            if (!username || !password) {
+                msgDiv.innerText = "Username dan password wajib diisi!";
+                msgDiv.className = "msg error-msg";
+                return;
+            }
+
             msgDiv.innerText = "Memeriksa kredensial...";
             msgDiv.className = "msg";
             btn.disabled = true;
@@ -709,26 +698,33 @@
                     method: "POST",
                     body: JSON.stringify({ action: "login", username, password })
                 });
-                const result = await response.json();
+                
+                const textResult = await response.text();
+                let result;
+                try {
+                    result = JSON.parse(textResult);
+                } catch (err) {
+                    throw new Error("Format respons server tidak valid.");
+                }
 
                 if (result.status === "success") {
                     loggedInUsername = username;
                     document.getElementById('login-section').style.display = 'none';
                     document.getElementById('app-section').style.display = 'block';
-                    document.getElementById('displayUser').innerText = result.nama_lengkap;
+                    document.getElementById('displayUser').innerText = result.nama_lengkap || username;
                     
-                    document.getElementById('inputNama').value = result.nama_lengkap;
-                    document.getElementById('previewNama').innerText = result.nama_lengkap;
+                    document.getElementById('inputNama').value = result.nama_lengkap || username;
+                    document.getElementById('previewNama').innerText = result.nama_lengkap || username;
                     
                     const today = new Date().toISOString().split('T')[0];
                     document.getElementById('inputJadwal').value = today;
                     document.getElementById('previewJadwal').innerText = formatTanggalIndonesia(today);
                 } else {
-                    msgDiv.innerText = result.message;
+                    msgDiv.innerText = result.message || "Login gagal.";
                     msgDiv.className = "msg error-msg";
                 }
             } catch (error) {
-                msgDiv.innerText = "Terjadi kesalahan koneksi atau deployment belum diatur 'Anyone'.";
+                msgDiv.innerText = "Gagal terhubung. Pastikan Web App Google Script sudah di-deploy dengan akses 'Anyone'.";
                 msgDiv.className = "msg error-msg";
             }
             btn.disabled = false;
@@ -790,23 +786,18 @@
 
             const remainingSlots = 3 - uploadedPhotos.length;
             if (remainingSlots <= 0) {
-                alert("Maksimal sudah 3 foto dokumentasi tercapai. Hapus salah satu foto jika ingin menggantinya.");
+                alert("Maksimal sudah 3 foto dokumentasi tercapai.");
                 document.getElementById('uploadFoto').value = '';
                 return;
             }
 
             const filesToProcess = Array.from(files).slice(0, remainingSlots);
-            if (files.length > remainingSlots) {
-                alert(`Hanya ${remainingSlots} foto yang ditambahkan karena batas maksimal adalah 3 foto.`);
-            }
-
             let processedCount = 0;
             filesToProcess.forEach((file) => {
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     uploadedPhotos.push(e.target.result);
                     processedCount++;
-                    
                     if (processedCount === filesToProcess.length) {
                         renderPhotos();
                         document.getElementById('uploadFoto').value = ''; 
@@ -842,7 +833,6 @@
                 const deleteBtn = document.createElement('button');
                 deleteBtn.className = 'btn-delete-photo no-print';
                 deleteBtn.innerHTML = '&times;';
-                deleteBtn.title = 'Hapus foto ini';
                 deleteBtn.onclick = () => removePhoto(index);
 
                 card.appendChild(img);

@@ -68,6 +68,7 @@
         input[type="text"],
         input[type="password"],
         input[type="date"],
+        select,
         textarea {
             width: 100%;
             padding: 10px;
@@ -75,9 +76,10 @@
             border-radius: 6px;
             font-size: 14px;
             transition: border-color 0.3s;
+            background-color: #fff;
         }
 
-        input:focus, textarea:focus {
+        input:focus, select:focus, textarea:focus {
             outline: none;
             border-color: var(--primary-color);
         }
@@ -277,7 +279,6 @@
             position: relative;
         }
 
-        /* PERBAIKAN: Menghilangkan bar hitam dengan object-fit: cover */
         .photo-card img {
             display: block;
             width: 100%;
@@ -302,7 +303,6 @@
             border: 1px solid #ccc;
         }
 
-        /* Tombol Hapus Foto Interaktif */
         .btn-delete-photo {
             position: absolute;
             top: 8px;
@@ -347,7 +347,6 @@
             margin-top: 10px;
         }
 
-        /* PENYESUAIAN MOBILE / HP AGAR RAPI MENJADI 2 HALAMAN */
         @media (max-width: 768px) {
             body {
                 padding: 10px;
@@ -371,7 +370,7 @@
             body { background: white; padding: 0; }
             .container { box-shadow: none; padding: 0; max-width: 100%; }
             .no-print { display: none !important; }
-            input, textarea { border: none; background: transparent; padding: 0; resize: none; font-size: 13px; }
+            input, select, textarea { border: none; background: transparent; padding: 0; resize: none; font-size: 13px; -webkit-appearance: none; }
             .page-break { page-break-before: always; display: block; }
         }
     </style>
@@ -442,9 +441,39 @@
                 </div>
 
                 <div class="form-group">
-                    <label>Tujuan:</label>
-                    <textarea id="inputTujuan" required placeholder="Masukkan Tujuan Pengawasan"></textarea>
+                    <label>Jenis Survei:</label>
+                    <select id="inputJenisSurvei" required onchange="updateTujuanGabungan()">
+                        <option value="" disabled selected>-- Pilih Jenis Survei --</option>
+                        <option value="KSA Padi">KSA Padi</option>
+                        <option value="KSA Jagung">KSA Jagung</option>
+                        <option value="Ubinan Padi">Ubinan Padi</option>
+                        <option value="Ubinan Palawija">Ubinan Palawija</option>
+                        <option value="VPVN Hortikultura">VPVN Hortikultura</option>
+                        <option value="SKB Bulanan">SKB Bulanan</option>
+                        <option value="SKB Tahunan">SKB Tahunan</option>
+                        <option value="Updating DPP UTL">Updating DPP UTL</option>
+                        <option value="TPI">TPI</option>
+                        <option value="LPTB">LPTB</option>
+                        <option value="LTU">LTU</option>
+                        <option value="Perusahaan Kehutanan">Perusahaan Kehutanan</option>
+                        <option value="Survei Kesejahteraan Petani (SKP) 2026">Survei Kesejahteraan Petani (SKP) 2026</option>
+                        <option value="SITASI 2026">SITASI 2026</option>
+                        <option value="SKJG 2026">SKJG 2026</option>
+                    </select>
                 </div>
+
+                <div class="form-group">
+                    <label>Tujuan:</label>
+                    <select id="inputTujuanPilih" required onchange="updateTujuanGabungan()">
+                        <option value="" disabled selected>-- Pilih Tujuan --</option>
+                        <option value="Pengumpulan data">Pengumpulan data</option>
+                        <option value="Pengawasan/ Pemeriksaan Lapangan">Pengawasan/ Pemeriksaan Lapangan</option>
+                        <option value="Supervisi">Supervisi</option>
+                    </select>
+                </div>
+
+                <!-- Hidden input untuk menyimpan hasil gabungan teks tujuan yang dikirim ke script -->
+                <input type="hidden" id="inputTujuan">
 
                 <div class="form-group">
                     <label>Jadwal:</label>
@@ -544,7 +573,7 @@
     <script>
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwQ-bmfkstTg4Q1_qB6ZJn66hs77c3zRAyt9gQaT_xsLJEYL5U8imkMsHmzO5VUY3II/exec";
         let loggedInUsername = "";
-        let uploadedPhotos = []; // Menyimpan array foto yang terakumulasi
+        let uploadedPhotos = []; 
 
         function formatTanggalIndonesia(dateString) {
             if (!dateString) return "";
@@ -554,7 +583,25 @@
             return date.toLocaleDateString('id-ID', options);
         }
 
-        const fields = ['Nama', 'Tujuan', 'AnggaranBiaya', 'AnggaranPeriksa', 'Urutan', 'Pejabat'];
+        // Fungsi menggabungkan pilihan Tujuan dan Jenis Survei secara otomatis
+        function updateTujuanGabungan() {
+            const jenisSurvei = document.getElementById('inputJenisSurvei').value;
+            const tujuanPilih = document.getElementById('inputTujuanPilih').value;
+            
+            let gabungan = "";
+            if (tujuanPilih && jenisSurvei) {
+                gabungan = `${tujuanPilih} ${jenisSurvei}`;
+            } else if (tujuanPilih) {
+                gabungan = tujuanPilih;
+            } else if (jenisSurvei) {
+                gabungan = jenisSurvei;
+            }
+
+            document.getElementById('inputTujuan').value = gabungan;
+            document.getElementById('previewTujuan').innerText = gabungan;
+        }
+
+        const fields = ['Nama', 'AnggaranBiaya', 'AnggaranPeriksa', 'Urutan', 'Pejabat'];
         fields.forEach(field => {
             const inputEl = document.getElementById('input' + field);
             const previewEl = document.getElementById('preview' + field);
@@ -714,7 +761,6 @@
             }
         }
 
-        // Fungsi Penanganan Foto Akumulatif (Satu per satu / multiple dengan batas 3)
         function handleImageUpload(event) {
             const files = event.target.files;
             if (!files || files.length === 0) return;
@@ -756,6 +802,7 @@
             const container = document.getElementById('docBoxContainer');
             container.innerHTML = '';
 
+            // Render kotak foto yang terisi
             uploadedPhotos.forEach((src, index) => {
                 const itemDiv = document.createElement('div');
                 itemDiv.className = 'doc-box-item';
@@ -783,7 +830,11 @@
                 container.appendChild(itemDiv);
             });
 
+            // Render sisa slot yang kosong (Hanya render slot jika total slot yang terisi kurang dari indeks saat ini, 
+            // sehingga slot ketiga otomatis dihilangkan/tidak dibuat jika tidak ada foto ketiga)
             for (let i = uploadedPhotos.length; i < 3; i++) {
+                // Jika foto hanya 1 atau 2, slot kosong terakhir tidak ditampilkan atau dibiarkan bersih, 
+                // atau jika Anda ingin menyembunyikan slot kosong sepenuhnya saat tidak ada foto:
                 const emptyDiv = document.createElement('div');
                 emptyDiv.className = 'doc-box-item';
                 emptyDiv.style.display = 'flex';

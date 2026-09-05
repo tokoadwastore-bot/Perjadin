@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aplikasi Laporan Kegiatan / Visum Pengawasan</title>
+    <title>Aplikasi Laporan Kegiatan & Visum Pengawasan</title>
     <style>
         :root {
             --primary-color: #1a73e8;
@@ -38,10 +38,10 @@
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
         }
 
-        /* Login Screen Styles */
-        #login-section {
+        /* Auth Screen (Login & Register) */
+        .auth-container {
             max-width: 400px;
-            margin: 80px auto;
+            margin: 60px auto;
             background: white;
             padding: 30px;
             border-radius: 10px;
@@ -105,14 +105,26 @@
             background-color: var(--primary-dark);
         }
 
-        .error-msg {
-            color: #d93025;
-            font-size: 13px;
-            margin-top: 5px;
+        .toggle-link {
             text-align: center;
+            margin-top: 15px;
+            font-size: 13px;
+            color: var(--primary-color);
+            cursor: pointer;
+        }
+        .toggle-link:hover {
+            text-decoration: underline;
         }
 
-        /* App Section Styles */
+        .msg {
+            font-size: 13px;
+            margin-top: 10px;
+            text-align: center;
+        }
+        .error-msg { color: #d93025; }
+        .success-msg { color: #137333; }
+
+        /* App Section */
         #app-section {
             display: none;
         }
@@ -149,7 +161,6 @@
             letter-spacing: 1px;
         }
 
-        /* Tabel Sesuai Template Visum Pengawasan */
         .report-table {
             width: 100%;
             border-collapse: collapse;
@@ -182,7 +193,6 @@
             padding-bottom: 5px;
         }
 
-        /* Pengaturan Layout Foto Dokumentasi */
         .photo-wrapper {
             display: flex;
             justify-content: center;
@@ -220,52 +230,310 @@
             background-color: #2e8b57;
         }
 
-        /* CSS khusus saat Cetak/Save to PDF */
+        .loading-spinner {
+            display: none;
+            text-align: center;
+            font-style: italic;
+            color: #666;
+            margin-top: 10px;
+        }
+
         @media print {
-            body {
-                background: white;
-                padding: 0;
-            }
-            .container {
-                box-shadow: none;
-                padding: 0;
-                max-width: 100%;
-            }
-            .no-print {
-                display: none !important;
-            }
-            input, textarea {
-                border: none;
-                background: transparent;
-                padding: 0;
-                resize: none;
-            }
+            body { background: white; padding: 0; }
+            .container { box-shadow: none; padding: 0; max-width: 100%; }
+            .no-print { display: none !important; }
+            input, textarea { border: none; background: transparent; padding: 0; resize: none; }
         }
     </style>
 </head>
 <body>
 
-    <div id="login-section">
+    <!-- HALAMAN LOGIN -->
+    <div id="login-section" class="auth-container">
         <h2>🔐 Login Sistem</h2>
         <form id="loginForm" onsubmit="handleLogin(event)">
             <div class="form-group">
-                <label>Username / Email</label>
-                <input type="text" id="username" required placeholder="Masukkan username">
+                <label>Username</label>
+                <input type="text" id="loginUser" required placeholder="Masukkan username">
             </div>
             <div class="form-group">
                 <label>Password</label>
-                <input type="password" id="password" required placeholder="Masukkan password">
+                <input type="password" id="loginPass" required placeholder="Masukkan password">
             </div>
-            <button type="submit">Masuk</button>
-            <div id="loginError" class="error-msg"></div>
-            <p style="text-align: center; font-size: 12px; margin-top: 15px; color: #666;">
-                Akun Demo: <b>admin</b> / <b>admin123</b><br>(Atau integrasikan via API Google Sheets Anda)
-            </p>
+            <button type="submit" id="btnLogin">Masuk</button>
+            <div id="loginMsg" class="msg"></div>
         </form>
+        <div class="toggle-link" onclick="switchAuthMode('register')">Belum punya akun? Daftar di sini</div>
     </div>
 
+    <!-- HALAMAN REGISTER (DAFTAR) -->
+    <div id="register-section" class="auth-container" style="display: none;">
+        <h2>📝 Daftar Akun Baru</h2>
+        <form id="registerForm" onsubmit="handleRegister(event)">
+            <div class="form-group">
+                <label>Nama Lengkap</label>
+                <input type="text" id="regNama" required placeholder="Nama lengkap petugas">
+            </div>
+            <div class="form-group">
+                <label>Username</label>
+                <input type="text" id="regUser" required placeholder="Buat username">
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="regPass" required placeholder="Buat password">
+            </div>
+            <button type="submit" id="btnReg">Daftar</button>
+            <div id="regMsg" class="msg"></div>
+        </form>
+        <div class="toggle-link" onclick="switchAuthMode('login')">Sudah punya akun? Login di sini</div>
+    </div>
+
+    <!-- HALAMAN UTAMA LAPORAN -->
     <div id="app-section" class="container">
         <div class="header-app no-print">
             <div class="user-info">👤 Petugas Login: <b id="displayUser">Admin</b></div>
             <button class="btn-logout" onclick="handleLogout()">Logout</button>
         </div>
+
+        <div class="report-title">LAPORAN KEGIATAN</div>
+
+        <form id="reportForm" onsubmit="saveReportToCloud(event)">
+            <div class="section-heading">UMUM</div>
+            <table class="report-table">
+                <tr>
+                    <td class="label-cell">Nama</td>
+                    <td class="input-cell"><input type="text" id="repNama" required placeholder="Nama Petugas"></td>
+                    <td class="label-cell">4. Anggaran/Kegiatan yang membiayai</td>
+                    <td class="input-cell"><input type="text" id="repAnggaranBiaya" value="054"></td>
+                </tr>
+                <tr>
+                    <td class="label-cell">Tujuan</td>
+                    <td class="input-cell"><textarea id="repTujuan" required placeholder="Tujuan pengawasan..."></textarea></td>
+                    <td class="label-cell">5. Anggaran/Kegiatan yang diperiksa</td>
+                    <td class="input-cell"><input type="text" id="repAnggaranPeriksa" value="054"></td>
+                </tr>
+                <tr>
+                    <td class="label-cell">3. Jadwal</td>
+                    <td class="input-cell"><input type="date" id="repJadwal" required></td>
+                    <td class="label-cell">6. Tanda tangan Petugas</td>
+                    <td class="input-cell"><input type="text" value="(Kosong / Manual)" disabled style="color: #888; font-style: italic;"></td>
+                </tr>
+            </table>
+
+            <div class="section-heading">B. URUTAN KEGIATAN (RINGKASAN HASIL)</div>
+            <div class="form-group">
+                <textarea id="repUrutan" required style="min-height: 120px;" placeholder="Uraikan urutan kegiatan dan ringkasan hasil di sini..."></textarea>
+            </div>
+
+            <div class="section-heading">C. PEJABAT DAN TEMPAT YANG DIKUNJUNGI</div>
+            <div class="form-group">
+                <textarea id="repPejabat" required style="min-height: 80px;" placeholder="Sebutkan nama pejabat dan instansi yang dikunjungi..."></textarea>
+            </div>
+
+            <div class="section-heading">D. DOKUMENTASI</div>
+            <div class="form-group no-print">
+                <label>Upload Foto Dokumentasi (Maksimal 2 foto)</label>
+                <input type="file" id="uploadFoto" accept="image/*" multiple onchange="handleImageUpload(event)">
+            </div>
+            
+            <div id="photoContainer" class="photo-wrapper"></div>
+
+            <div class="action-buttons no-print">
+                <button type="submit" class="btn-print" style="background-color: #1a73e8;">💾 Simpan ke Google Sheets & Cetak PDF</button>
+            </div>
+            <div id="saveStatus" class="loading-spinner">Menyimpan laporan ke Google Sheets...</div>
+        </form>
+    </div>
+
+    <script>
+        // URL Google Apps Script yang sudah dikonfigurasi
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxqbyc6lPKx6VwztQbkTqXJRITMQPyvmnn4tR_TC6gkDFXBvbfANv57WBZrjgYQNnkD/exec";
+        let loggedInUsername = "";
+
+        function switchAuthMode(mode) {
+            if (mode === 'register') {
+                document.getElementById('login-section').style.display = 'none';
+                document.getElementById('register-section').style.display = 'block';
+            } else {
+                document.getElementById('register-section').style.display = 'none';
+                document.getElementById('login-section').style.display = 'block';
+            }
+        }
+
+        // Fungsi Daftar (Register)
+        async function handleRegister(event) {
+            event.preventDefault();
+            const nama_lengkap = document.getElementById('regNama').value.trim();
+            const username = document.getElementById('regUser').value.trim();
+            const password = document.getElementById('regPass').value.trim();
+            const msgDiv = document.getElementById('regMsg');
+            const btn = document.getElementById('btnReg');
+
+            msgDiv.innerText = "Mendaftarkan akun...";
+            msgDiv.className = "msg";
+            btn.disabled = true;
+
+            try {
+                const response = await fetch(SCRIPT_URL, {
+                    method: "POST",
+                    body: JSON.stringify({ action: "register", nama_lengkap, username, password })
+                });
+                const result = await response.json();
+
+                if (result.status === "success") {
+                    msgDiv.innerText = result.message;
+                    msgDiv.className = "msg success-msg";
+                    setTimeout(() => switchAuthMode('login'), 1500);
+                } else {
+                    msgDiv.innerText = result.message;
+                    msgDiv.className = "msg error-msg";
+                }
+            } catch (error) {
+                msgDiv.innerText = "Terjadi kesalahan koneksi.";
+                msgDiv.className = "msg error-msg";
+            }
+            btn.disabled = false;
+        }
+
+        // Fungsi Login
+        async function handleLogin(event) {
+            event.preventDefault();
+            const username = document.getElementById('loginUser').value.trim();
+            const password = document.getElementById('loginPass').value.trim();
+            const msgDiv = document.getElementById('loginMsg');
+            const btn = document.getElementById('btnLogin');
+
+            msgDiv.innerText = "Memeriksa kredensial...";
+            msgDiv.className = "msg";
+            btn.disabled = true;
+
+            try {
+                const response = await fetch(SCRIPT_URL, {
+                    method: "POST",
+                    body: JSON.stringify({ action: "login", username, password })
+                });
+                const result = await response.json();
+
+                if (result.status === "success") {
+                    loggedInUsername = username;
+                    document.getElementById('login-section').style.display = 'none';
+                    document.getElementById('app-section').style.display = 'block';
+                    document.getElementById('displayUser').innerText = result.nama_lengkap;
+                    document.getElementById('repNama').value = result.nama_lengkap;
+                    
+                    const today = new Date().toISOString().split('T')[0];
+                    document.getElementById('repJadwal').value = today;
+                } else {
+                    msgDiv.innerText = result.message;
+                    msgDiv.className = "msg error-msg";
+                }
+            } catch (error) {
+                msgDiv.innerText = "Terjadi kesalahan koneksi ke Spreadsheet.";
+                msgDiv.className = "msg error-msg";
+            }
+            btn.disabled = false;
+        }
+
+        function handleLogout() {
+            loggedInUsername = "";
+            document.getElementById('app-section').style.display = 'none';
+            document.getElementById('login-section').style.display = 'block';
+            document.getElementById('loginForm').reset();
+            document.getElementById('registerForm').reset();
+        }
+
+        // Simpan Laporan ke Google Sheets lalu Print/PDF
+        async function saveReportToCloud(event) {
+            event.preventDefault();
+            const statusDiv = document.getElementById('saveStatus');
+            statusDiv.style.display = "block";
+            statusDiv.innerText = "Menyimpan data laporan ke Google Sheets...";
+
+            const reportData = {
+                action: "save_report",
+                username: loggedInUsername,
+                nama: document.getElementById('repNama').value,
+                tujuan: document.getElementById('repTujuan').value,
+                jadwal: document.getElementById('repJadwal').value,
+                anggaran_biaya: document.getElementById('repAnggaranBiaya').value,
+                anggaran_periksa: document.getElementById('repAnggaranPeriksa').value,
+                urutan: document.getElementById('repUrutan').value,
+                pejabat: document.getElementById('repPejabat').value
+            };
+
+            try {
+                const response = await fetch(SCRIPT_URL, {
+                    method: "POST",
+                    body: JSON.stringify(reportData)
+                });
+                const result = await response.json();
+
+                if (result.status === "success") {
+                    statusDiv.innerText = "✅ Berhasil disimpan ke Google Sheets! Membuka cetak PDF...";
+                    statusDiv.style.color = "#137333";
+                    setTimeout(() => {
+                        statusDiv.style.display = "none";
+                        window.print();
+                    }, 1000);
+                } else {
+                    statusDiv.innerText = "Gagal menyimpan: " + result.message;
+                    statusDiv.style.color = "#d93025";
+                }
+            } catch (error) {
+                statusDiv.innerText = "Gagal terhubung ke Google Sheets.";
+                statusDiv.style.color = "#d93025";
+            }
+        }
+
+        // Pengaturan Foto Dokumentasi
+        function handleImageUpload(event) {
+            const files = event.target.files;
+            const container = document.getElementById('photoContainer');
+            container.innerHTML = '';
+
+            if (files.length > 2) {
+                alert("Maksimal hanya 2 foto yang dapat diunggah.");
+                document.getElementById('uploadFoto').value = '';
+                return;
+            }
+
+            Array.from(files).forEach((file, index) => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = new Image();
+                    img.src = e.target.result;
+                    
+                    img.onload = function() {
+                        const isPortrait = img.naturalHeight > img.naturalWidth;
+                        const card = document.createElement('div');
+                        card.className = 'photo-card';
+
+                        if (files.length === 1) {
+                            img.style.maxWidth = isPortrait ? '350px' : '500px';
+                        } else {
+                            if (isPortrait) {
+                                img.style.maxWidth = '280px';
+                                container.style.flexDirection = 'row';
+                            } else {
+                                img.style.maxWidth = '450px';
+                                container.style.flexDirection = 'column';
+                            }
+                        }
+
+                        const caption = document.createElement('p');
+                        caption.style.fontSize = "12px";
+                        caption.style.color = "#666";
+                        caption.style.marginTop = "6px";
+                        caption.innerText = `Dokumentasi Foto ${index + 1} (${isPortrait ? 'Portrait' : 'Landscape'})`;
+
+                        card.appendChild(img);
+                        card.appendChild(caption);
+                        container.appendChild(card);
+                    }
+                }
+                reader.readAsDataURL(file);
+            });
+        }
+    </script>
+</body>
+</html>

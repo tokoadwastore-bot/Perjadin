@@ -300,6 +300,30 @@
             border: 1px solid #ccc;
         }
 
+        /* Tombol Hapus Foto Interaktif */
+        .btn-delete-photo {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(217, 48, 37, 0.9);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            z-index: 10;
+        }
+        .btn-delete-photo:hover {
+            background: #b31412;
+        }
+
         .action-buttons {
             display: flex;
             gap: 15px;
@@ -426,8 +450,9 @@
                 </div>
 
                 <div class="form-group">
-                    <label>Dokumentasi (Upload Foto Lanskap, Maksimal 3):</label>
+                    <label>Dokumentasi Foto (Bisa tambah foto satu persatu atau sekaligus, Maksimal 3 foto):</label>
                     <input type="file" id="uploadFoto" accept="image/*" multiple onchange="handleImageUpload(event)">
+                    <small style="color: #5f6368; display: block; margin-top: 5px;">*Jika Anda upload 1 foto, lalu upload foto berikutnya, foto akan bertambah (akumulasi) hingga maksimal 3 foto.</small>
                 </div>
             </div>
 
@@ -449,7 +474,7 @@
                         <td>2. Tujuan</td>
                         <td><span id="previewTujuan"></span></td>
                         <td>5. Anggaran/Kegiatan yang diperiksa</td>
-                        <td><span id="previewAnggaranPeriksa">054</span></td>
+                        <td>054</td>
                     </tr>
                     <tr>
                         <td>3. Jadwal</td>
@@ -497,6 +522,7 @@
     <script>
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwQ-bmfkstTg4Q1_qB6ZJn66hs77c3zRAyt9gQaT_xsLJEYL5U8imkMsHmzO5VUY3II/exec";
         let loggedInUsername = "";
+        let uploadedPhotos = []; // Menyimpan array foto yang terakumulasi
 
         function formatTanggalIndonesia(dateString) {
             if (!dateString) return "";
@@ -666,41 +692,97 @@
             }
         }
 
+        // Fungsi Penanganan Foto Akumulatif (Satu per satu / multiple dengan batas 3)
         function handleImageUpload(event) {
             const files = event.target.files;
-            const container = document.getElementById('docBoxContainer');
-            container.innerHTML = '';
+            if (!files || files.length === 0) return;
 
-            if (files.length > 3) {
-                alert("Maksimal hanya 3 foto yang dapat diunggah sesuai format lembar dokumentasi.");
+            // Hitung kapasitas yang tersisa
+            const remainingSlots = 3 - uploadedPhotos.length;
+            if (remainingSlots <= 0) {
+                alert("Maksimal sudah 3 foto dokumentasi tercapai. Hapus salah satu foto jika ingin menggantinya.");
                 document.getElementById('uploadFoto').value = '';
                 return;
             }
 
-            Array.from(files).forEach((file, index) => {
+            const filesToProcess = Array.from(files).slice(0, remainingSlots);
+            if (files.length > remainingSlots) {
+                alert(`Hanya ${remainingSlots} foto yang ditambahkan karena batas maksimal adalah 3 foto.`);
+            }
+
+            let processedCount = 0;
+            filesToProcess.forEach((file) => {
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    const itemDiv = document.createElement('div');
-                    itemDiv.className = 'doc-box-item';
-
-                    const card = document.createElement('div');
-                    card.className = 'photo-card';
-
-                    const img = document.createElement('img');
-                    img.src = e.target.result;
-
-                    const caption = document.createElement('div');
-                    caption.className = 'photo-caption';
-                    caption.innerText = `Dokumentasi Foto ${index + 1}`;
-
-                    card.appendChild(img);
-                    card.appendChild(caption);
-                    itemDiv.appendChild(card);
-                    container.appendChild(itemDiv);
+                    uploadedPhotos.push(e.target.result);
+                    processedCount++;
+                    
+                    if (processedCount === filesToProcess.length) {
+                        renderPhotos();
+                        document.getElementById('uploadFoto').value = ''; // Reset input file agar bisa pilih file yang sama lagi jika perlu
+                    }
                 }
                 reader.readAsDataURL(file);
             });
         }
+
+        function removePhoto(index) {
+            uploadedPhotos.splice(index, 1);
+            renderPhotos();
+        }
+
+        function renderPhotos() {
+            const container = document.getElementById('docBoxContainer');
+            container.innerHTML = '';
+
+            // Tampilkan foto yang sudah ada di array
+            uploadedPhotos.forEach((src, index) => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'doc-box-item';
+
+                const card = document.createElement('div');
+                card.className = 'photo-card';
+
+                const img = document.createElement('img');
+                img.src = src;
+
+                const caption = document.createElement('div');
+                caption.className = 'photo-caption';
+                caption.innerText = `Dokumentasi Foto ${index + 1}`;
+
+                // Tombol hapus hanya muncul di layar (no-print)
+                const deleteBtn = document.createElement('button');
+                deleteBtn.className = 'btn-delete-photo no-print';
+                deleteBtn.innerHTML = '&times;';
+                deleteBtn.title = 'Hapus foto ini';
+                deleteBtn.onclick = () => removePhoto(index);
+
+                card.appendChild(img);
+                card.appendChild(caption);
+                card.appendChild(deleteBtn);
+                itemDiv.appendChild(card);
+                container.appendChild(itemDiv);
+            });
+
+            // Jika kurang dari 3 foto, tambahkan kotak kosong placeholder agar layout tetap rapih proporsional
+            for (let i = uploadedPhotos.length; i < 3; i++) {
+                const emptyDiv = document.createElement('div');
+                emptyDiv.className = 'doc-box-item';
+                emptyDiv.style.display = 'flex';
+                emptyDiv.style.alignItems = 'center';
+                emptyDiv.style.justifyContent = 'center';
+                emptyDiv.style.color = '#aaa';
+                emptyDiv.style.fontSize = '12px';
+                emptyDiv.style.background = '#fafafa';
+                emptyDiv.innerHTML = `<span>[ Kosong - Slot Dokumentasi Foto ${i + 1} ]</span>`;
+                container.appendChild(emptyDiv);
+            }
+        }
+
+        // Panggil render awal saat halaman dimuat
+        window.onload = function() {
+            renderPhotos();
+        };
     </script>
 </body>
 </html>

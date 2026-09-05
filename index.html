@@ -152,7 +152,7 @@
             background: #b31412;
         }
 
-        /* Halaman Laporan 1 & 2 Persis Dokumen Resmi */
+        /* Halaman Laporan 1 & 2 Persis Gambar Referensi */
         .report-page {
             background: white;
             width: 100%;
@@ -181,44 +181,70 @@
 
         .section-header {
             border: 1px solid #000;
-            background: #f2f2f2;
+            border-bottom: none;
+            background: #ffffff;
             text-align: center;
             font-weight: bold;
             font-size: 13px;
             padding: 6px;
-            margin-bottom: -1px;
         }
 
-        /* Kotak Urutan Kegiatan dibuat luas secara default agar kotak pejabat berada di bawah */
-        .box-section-urutan {
+        /* Struktur Kotak Bagian B Sesuai Gambar Persis (Kotak Besar + Kotak Kecil di Bawahnya) */
+        .box-section-urutan-container {
             border: 1px solid #000;
-            min-height: 280px;
-            padding: 10px;
             margin-bottom: 15px;
         }
 
-        .box-section-pejabat {
+        .box-section-urutan-main {
+            min-height: 310px;
+            padding: 10px;
+            text-align: justify; /* Rata kanan kiri sesuai permintaan */
+            font-size: 13px;
+        }
+
+        .box-section-urutan-sub {
+            border-top: 1px solid #000;
+            min-height: 25px;
+            padding: 4px 10px;
+        }
+
+        /* Struktur Kotak Bagian C Sesuai Gambar */
+        .box-section-pejabat-container {
             border: 1px solid #000;
+            margin-bottom: 15px;
+        }
+
+        .box-section-pejabat-main {
             min-height: 90px;
             padding: 10px;
-            margin-bottom: 15px;
+            font-size: 13px;
         }
 
-        /* Halaman Kedua khusus Dokumentasi dengan Margin Optimalsasi 1 cm */
+        /* Halaman Kedua khusus Dokumentasi (3 Kotak Susun Sesuai Gambar Page 2) */
         .page-break {
             page-break-before: always;
             margin-top: 40px;
         }
 
-        .doc-box {
+        .doc-container {
             border: 1px solid #000;
-            height: 650px;
-            padding: 15px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .doc-box-item {
+            border-bottom: 1px solid #000;
+            height: 290px;
+            padding: 10px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 15px;
+            position: relative;
+        }
+
+        .doc-box-item:last-child {
+            border-bottom: none;
         }
 
         .photo-card {
@@ -231,7 +257,7 @@
             display: block;
             margin: 0 auto;
             object-fit: contain;
-            max-height: 280px;
+            max-height: 230px;
             max-width: 100%;
         }
 
@@ -356,17 +382,19 @@
                 </div>
 
                 <div class="form-group">
-                    <label>Dokumentasi (Upload Foto, Maksimal 2):</label>
+                    <label>Dokumentasi (Upload Foto, Maksimal 3):</label>
                     <input type="file" id="uploadFoto" accept="image/*" multiple onchange="handleImageUpload(event)">
                 </div>
             </div>
 
-            <!-- PREVIEW / HASIL CETAK HALAMAN 1 -->
+            <!-- PREVIEW / HASIL CETAK HALAMAN 1 (PERSIS GAMBAR 1) -->
             <div class="report-page">
                 <div class="report-title">LAPORAN KEGIATAN</div>
 
-                <div class="section-header">A. UMUM</div>
-                <table class="report-table">
+                <table class="report-table" style="margin-bottom: 0;">
+                    <tr>
+                        <th colspan="4" style="background: #ffffff; text-align: center;">A. UMUM</th>
+                    </tr>
                     <tr>
                         <td style="width: 15%;">1. Nama</td>
                         <td style="width: 35%;"><span id="previewNama"></span></td>
@@ -387,23 +415,38 @@
                     </tr>
                 </table>
 
-                <div class="section-header">B. URUTAN KEGIATAN (RINGKASAN HASIL)</div>
-                <div class="box-section-urutan">
-                    <span id="previewUrutan" style="white-space: pre-wrap;"></span>
+                <!-- Bagian B Sesuai Layout Referensi -->
+                <div class="section-header" style="margin-top: 15px;">B. URUTAN KEGIATAN (RINGKASAN HASIL)</div>
+                <div class="box-section-urutan-container">
+                    <div class="box-section-urutan-main">
+                        <span id="previewUrutan" style="white-space: pre-wrap;"></span>
+                    </div>
+                    <div class="box-section-urutan-sub"></div>
                 </div>
 
+                <!-- Bagian C Sesuai Layout Referensi -->
                 <div class="section-header">C. PEJABAT DAN TEMPAT YANG DIKUNJUNGI</div>
-                <div class="box-section-pejabat">
-                    <span id="previewPejabat" style="white-space: pre-wrap;"></span>
+                <div class="box-section-pejabat-container">
+                    <div class="box-section-pejabat-main">
+                        <span id="previewPejabat" style="white-space: pre-wrap;"></span>
+                    </div>
                 </div>
             </div>
 
-            <!-- HALAMAN 2: DOKUMENTASI -->
+            <!-- HALAMAN 2: DOKUMENTASI (PERSIS GAMBAR 2) -->
             <div class="page-break"></div>
             <div class="report-page">
-                <div class="section-header">D. DOKUMENTASI</div>
-                <div id="previewPhotoContainer" class="doc-box">
-                    <span style="color: #888; font-style: italic;">Belum ada foto dokumentasi diunggah.</span>
+                <div class="section-header" style="margin-bottom: 0;">D. DOKUMENTASI</div>
+                <div class="doc-container">
+                    <div id="docBox0" class="doc-box-item">
+                        <span style="color: #888; font-style: italic; font-size: 13px;">Belum ada foto dokumentasi 1.</span>
+                    </div>
+                    <div id="docBox1" class="doc-box-item">
+                        <span style="color: #888; font-style: italic; font-size: 13px;">Belum ada foto dokumentasi 2.</span>
+                    </div>
+                    <div id="docBox2" class="doc-box-item">
+                        <span style="color: #888; font-style: italic; font-size: 13px;">Belum ada foto dokumentasi 3.</span>
+                    </div>
                 </div>
             </div>
 
@@ -584,86 +627,45 @@
             }
         }
 
-        // Pengaturan Tata Letak Foto Halaman 2 (Optimasi ukuran penuh dengan margin 1 cm)
+        // Pengaturan Tata Letak Foto Halaman 2 (3 Kotak Susun Sesuai Gambar Referensi Page 2)
         function handleImageUpload(event) {
             const files = event.target.files;
-            const container = document.getElementById('previewPhotoContainer');
-            container.innerHTML = '';
+            
+            // Reset 3 kotak dokumentasi ke kondisi kosong
+            for (let i = 0; i < 3; i++) {
+                document.getElementById(`docBox${i}`).innerHTML = `<span style="color: #888; font-style: italic; font-size: 13px;">Belum ada foto dokumentasi ${i + 1}.</span>`;
+            }
 
-            if (files.length > 2) {
-                alert("Maksimal hanya 2 foto yang dapat diunggah.");
+            if (files.length > 3) {
+                alert("Maksimal hanya 3 foto yang dapat diunggah sesuai format lembar dokumentasi.");
                 document.getElementById('uploadFoto').value = '';
                 return;
             }
 
-            if (files.length === 0) {
-                container.innerHTML = '<span style="color: #888; font-style: italic;">Belum ada foto dokumentasi diunggah.</span>';
-                return;
-            }
+            Array.from(files).forEach((file, index) => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const boxContainer = document.getElementById(`docBox${index}`);
+                    boxContainer.innerHTML = '';
 
-            const readerFirst = new FileReader();
-            readerFirst.onload = function(e1) {
-                const imgFirst = new Image();
-                imgFirst.src = e1.target.result;
-                imgFirst.onload = function() {
-                    const isFirstPortrait = imgFirst.naturalHeight > imgFirst.naturalWidth;
+                    const card = document.createElement('div');
+                    card.className = 'photo-card';
 
-                    if (files.length === 1) {
-                        // 1 Foto: Tengah Atas Proporsional
-                        container.style.flexDirection = 'column';
-                        container.style.justifyContent = 'center';
-                        container.style.alignItems = 'center';
-                        appendPhotoCard(files[0], 0, isFirstPortrait ? '350px' : '550px', isFirstPortrait ? '500px' : '320px');
-                    } else {
-                        // 2 Foto
-                        if (isFirstPortrait) {
-                            // Portrait: Kanan dan Kiri Berdampingan
-                            container.style.flexDirection = 'row';
-                            container.style.justifyContent = 'space-around';
-                            container.style.alignItems = 'center';
-                            
-                            Array.from(files).forEach((file, idx) => {
-                                appendPhotoCard(file, idx, '300px', '520px');
-                            });
-                        } else {
-                            // Landscape: Atas dan Bawah
-                            container.style.flexDirection = 'column';
-                            container.style.justifyContent = 'space-around';
-                            container.style.alignItems = 'center';
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
 
-                            Array.from(files).forEach((file, idx) => {
-                                appendPhotoCard(file, idx, '520px', '260px');
-                            });
-                        }
-                    }
+                    const caption = document.createElement('p');
+                    caption.style.fontSize = "11px";
+                    caption.style.color = "#555";
+                    caption.style.marginTop = "3px";
+                    caption.innerText = `Dokumentasi Foto ${index + 1}`;
+
+                    card.appendChild(img);
+                    card.appendChild(caption);
+                    boxContainer.appendChild(card);
                 }
-            }
-            readerFirst.readAsDataURL(files[0]);
-        }
-
-        function appendPhotoCard(file, index, maxWidth, maxHeight) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const container = document.getElementById('previewPhotoContainer');
-                const card = document.createElement('div');
-                card.className = 'photo-card';
-
-                const img = document.createElement('img');
-                img.src = e.target.result;
-                img.style.maxWidth = maxWidth;
-                img.style.maxHeight = maxHeight;
-
-                const caption = document.createElement('p');
-                caption.style.fontSize = "11px";
-                caption.style.color = "#555";
-                caption.style.marginTop = "4px";
-                caption.innerText = `Dokumentasi Foto ${index + 1}`;
-
-                card.appendChild(img);
-                card.appendChild(caption);
-                container.appendChild(card);
-            }
-            reader.readAsDataURL(file);
+                reader.readAsDataURL(file);
+            });
         }
     </script>
 </body>

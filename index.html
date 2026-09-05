@@ -179,9 +179,11 @@
             vertical-align: top;
         }
 
-        /* Penambahan 2px tinggi pada kolom tanda tangan petugas */
+        /* Penambahan tinggi dan ruang vertikal (spasi atas-bawah) pada kotak tanda tangan petugas */
         .report-table td:nth-child(4) {
-            height: 34px; 
+            height: 55px; 
+            padding-top: 12px;
+            padding-bottom: 12px;
         }
 
         .section-header {
@@ -225,7 +227,7 @@
             font-size: 13px;
         }
 
-        /* Halaman Kedua khusus Dokumentasi (Kotak penuh sampai batas bawah halaman) */
+        /* Halaman Kedua khusus Dokumentasi (Tinggi dikontrol agar aman tidak tembus halaman 3) */
         .page-break {
             page-break-before: always;
             margin-top: 40px;
@@ -233,37 +235,39 @@
 
         .doc-container {
             border: 1px solid #000;
-            min-height: 920px;
+            height: 870px; /* Tinggi optimal agar kotak mentok pas di batas bawah halaman 2 dan tidak meluber ke halaman 3 */
+            max-height: 870px;
             display: flex;
             flex-direction: column;
             justify-content: flex-start;
             padding: 15px;
+            overflow: hidden;
         }
 
         .doc-box-item {
-            min-height: 280px;
-            padding: 10px;
+            flex: 1;
+            padding: 5px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             position: relative;
-            margin-bottom: 10px;
+            margin-bottom: 5px;
         }
 
         .photo-card {
             text-align: center;
             max-width: 100%;
             max-height: 100%;
-            margin: 5px 0;
+            margin: 2px 0;
         }
 
         .photo-card img {
             display: block;
             margin: 0 auto;
             object-fit: cover;
-            width: 380px;
-            height: 230px;
+            width: 360px;
+            height: 210px;
             max-width: 100%;
         }
 
@@ -439,7 +443,7 @@
                 </div>
             </div>
 
-            <!-- HALAMAN 2: DOKUMENTASI (Landscape, Kotak Utuh Sampai Bawah Halaman) -->
+            <!-- HALAMAN 2: DOKUMENTASI (Landscape, Kotak Utuh Aman Tanpa Tembus Halaman 3) -->
             <div class="page-break"></div>
             <div class="report-page">
                 <div class="section-header" style="margin-bottom: 0;">D. DOKUMENTASI</div>
@@ -623,7 +627,7 @@
             }
         }
 
-        // Pengaturan Tata Letak Foto Halaman 2
+        // Pengaturan Tata Letak Foto Halaman 2 (Aman terkontrol agar pas dalam kotak batas bawah)
         function handleImageUpload(event) {
             const files = event.target.files;
             const container = document.getElementById('docBoxContainer');
@@ -650,7 +654,7 @@
                     const caption = document.createElement('p');
                     caption.style.fontSize = "11px";
                     caption.style.color = "#555";
-                    caption.style.marginTop = "3px";
+                    caption.style.marginTop = "2px";
                     caption.innerText = `Dokumentasi Foto ${index + 1}`;
 
                     card.appendChild(img);

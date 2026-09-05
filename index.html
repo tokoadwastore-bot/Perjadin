@@ -177,10 +177,18 @@
             letter-spacing: 0.5px;
         }
 
-        .report-table {
+        /* Memastikan seluruh elemen lembar laporan memiliki lebar 100% yang seragam */
+        .report-table,
+        .section-header,
+        .box-section-urutan-container,
+        .box-section-pejabat-container {
             width: 100%;
+            box-sizing: border-box;
+        }
+
+        .report-table {
             border-collapse: collapse;
-            margin-bottom: 15px;
+            margin-bottom: 0px;
         }
 
         .report-table th, .report-table td {
@@ -204,11 +212,12 @@
             font-weight: bold;
             font-size: 13px;
             padding: 6px;
+            margin-top: 15px;
         }
 
         .box-section-urutan-container {
             border: 1px solid #000;
-            margin-bottom: 15px;
+            margin-bottom: 0px;
         }
 
         .box-section-urutan-main {
@@ -226,7 +235,7 @@
 
         .box-section-pejabat-container {
             border: 1px solid #000;
-            margin-bottom: 15px;
+            margin-bottom: 0px;
         }
 
         .box-section-pejabat-main {
@@ -251,6 +260,7 @@
             padding: 0; 
             overflow: hidden;
             background-color: #fdfdfd;
+            width: 100%;
         }
 
         .doc-box-item {
@@ -516,7 +526,7 @@
             <div class="report-page">
                 <div class="report-title">LAPORAN KEGIATAN</div>
 
-                <table class="report-table" style="margin-bottom: 0;">
+                <table class="report-table">
                     <tr>
                         <th colspan="4" style="background: #ffffff; text-align: center;">A. UMUM</th>
                     </tr>
@@ -541,7 +551,7 @@
                 </table>
 
                 <!-- Bagian B -->
-                <div class="section-header" style="margin-top: 15px;">B. URUTAN KEGIATAN (RINGKASAN HASIL)</div>
+                <div class="section-header">B. URUTAN KEGIATAN (RINGKASAN HASIL)</div>
                 <div class="box-section-urutan-container">
                     <div class="box-section-urutan-main">
                         <span id="previewUrutan" style="white-space: pre-wrap;"></span>
@@ -646,7 +656,6 @@
             const msgDiv = document.getElementById('regMsg');
             const btn = document.getElementById('btnReg');
 
-            // Memastikan password bersih berupa angka biasa saja (menghapus spasi atau karakter non-digit jika ada)
             password = password.replace(/\D/g, '');
 
             if (!/^\d+$/.test(password)) {
@@ -759,7 +768,6 @@
                 const result = await response.json();
 
                 if (result.status === "success") {
-                    statusDiv.endsText = "✅ Berhasil disimpan ke Spreadsheet! Membuka dialog cetak PDF...";
                     statusDiv.innerText = "✅ Berhasil disimpan ke Spreadsheet! Membuka dialog cetak PDF...";
                     statusDiv.style.color = "#137333";
                     setTimeout(() => {
@@ -817,7 +825,6 @@
             const container = document.getElementById('docBoxContainer');
             container.innerHTML = '';
 
-            // Render kotak foto yang terisi
             uploadedPhotos.forEach((src, index) => {
                 const itemDiv = document.createElement('div');
                 itemDiv.className = 'doc-box-item';
@@ -845,13 +852,12 @@
                 container.appendChild(itemDiv);
             });
 
-            // Render sisa slot yang kosong (jika kurang dari 3 foto)
             for (let i = uploadedPhotos.length; i < 3; i++) {
                 const emptyDiv = document.createElement('div');
                 emptyDiv.className = 'doc-box-item';
                 emptyDiv.style.display = 'flex';
-                emptyDiv.style.alignItems = 'center';
-                emptyDiv.style.justifyContent = 'center';
+                emptyDiv.style.alignItems: 'center';
+                emptyDiv.style.justifyContent: 'center';
                 emptyDiv.style.color = '#aaa';
                 emptyDiv.style.fontSize = '12px';
                 emptyDiv.style.background = '#fafafa';

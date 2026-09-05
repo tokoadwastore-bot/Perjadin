@@ -277,13 +277,15 @@
             position: relative;
         }
 
+        /* PERBAIKAN: Menghilangkan bar hitam dengan object-fit: cover */
         .photo-card img {
             display: block;
             width: 100%;
             height: 100%;
             max-height: 285px;
-            object-fit: contain;
-            background-color: #000;
+            object-fit: cover; 
+            object-position: center;
+            background-color: transparent;
             margin: 0;
         }
 
@@ -343,6 +345,26 @@
             font-style: italic;
             color: #666;
             margin-top: 10px;
+        }
+
+        /* PENYESUAIAN MOBILE / HP AGAR RAPI MENJADI 2 HALAMAN */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            .container {
+                padding: 15px;
+                max-width: 100%;
+            }
+            .report-page {
+                margin-bottom: 30px;
+                padding-bottom: 20px;
+                border-bottom: 2px dashed #ccc;
+            }
+            .page-break {
+                margin-top: 20px;
+                border-top: none;
+            }
         }
 
         @media print {
@@ -697,7 +719,6 @@
             const files = event.target.files;
             if (!files || files.length === 0) return;
 
-            // Hitung kapasitas yang tersisa
             const remainingSlots = 3 - uploadedPhotos.length;
             if (remainingSlots <= 0) {
                 alert("Maksimal sudah 3 foto dokumentasi tercapai. Hapus salah satu foto jika ingin menggantinya.");
@@ -719,7 +740,7 @@
                     
                     if (processedCount === filesToProcess.length) {
                         renderPhotos();
-                        document.getElementById('uploadFoto').value = ''; // Reset input file agar bisa pilih file yang sama lagi jika perlu
+                        document.getElementById('uploadFoto').value = ''; 
                     }
                 }
                 reader.readAsDataURL(file);
@@ -735,7 +756,6 @@
             const container = document.getElementById('docBoxContainer');
             container.innerHTML = '';
 
-            // Tampilkan foto yang sudah ada di array
             uploadedPhotos.forEach((src, index) => {
                 const itemDiv = document.createElement('div');
                 itemDiv.className = 'doc-box-item';
@@ -750,7 +770,6 @@
                 caption.className = 'photo-caption';
                 caption.innerText = `Dokumentasi Foto ${index + 1}`;
 
-                // Tombol hapus hanya muncul di layar (no-print)
                 const deleteBtn = document.createElement('button');
                 deleteBtn.className = 'btn-delete-photo no-print';
                 deleteBtn.innerHTML = '&times;';
@@ -764,7 +783,6 @@
                 container.appendChild(itemDiv);
             });
 
-            // Jika kurang dari 3 foto, tambahkan kotak kosong placeholder agar layout tetap rapih proporsional
             for (let i = uploadedPhotos.length; i < 3; i++) {
                 const emptyDiv = document.createElement('div');
                 emptyDiv.className = 'doc-box-item';
@@ -779,7 +797,6 @@
             }
         }
 
-        // Panggil render awal saat halaman dimuat
         window.onload = function() {
             renderPhotos();
         };

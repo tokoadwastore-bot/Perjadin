@@ -179,7 +179,7 @@
             vertical-align: top;
         }
 
-        /* Penambahan tinggi dan ruang vertikal (spasi atas-bawah) pada kotak tanda tangan petugas */
+        /* Penambahan tinggi dan padding kotak tanda tangan petugas */
         .report-table td:nth-child(4) {
             height: 55px; 
             padding-top: 12px;
@@ -227,7 +227,7 @@
             font-size: 13px;
         }
 
-        /* Halaman Kedua khusus Dokumentasi (Tinggi dikontrol agar aman tidak tembus halaman 3) */
+        /* Halaman Kedua khusus Dokumentasi */
         .page-break {
             page-break-before: always;
             margin-top: 40px;
@@ -235,7 +235,7 @@
 
         .doc-container {
             border: 1px solid #000;
-            height: 870px; /* Tinggi optimal agar kotak mentok pas di batas bawah halaman 2 dan tidak meluber ke halaman 3 */
+            height: 870px;
             max-height: 870px;
             display: flex;
             flex-direction: column;
@@ -352,7 +352,7 @@
 
         <form id="reportForm" onsubmit="saveReportToCloud(event)">
             
-            <!-- FORMULIR INPUT BERJEJER KE BAWAH -->
+            <!-- FORMULIR INPUT -->
             <div class="no-print" style="background: #f1f3f4; padding: 20px; border-radius: 8px; margin-bottom: 30px;">
                 <h3 style="margin-bottom: 15px; color: #1a73e8;">Formulir Pengisian Laporan</h3>
                 
@@ -443,12 +443,12 @@
                 </div>
             </div>
 
-            <!-- HALAMAN 2: DOKUMENTASI (Landscape, Kotak Utuh Aman Tanpa Tembus Halaman 3) -->
+            <!-- HALAMAN 2: DOKUMENTASI -->
             <div class="page-break"></div>
             <div class="report-page">
                 <div class="section-header" style="margin-bottom: 0;">D. DOKUMENTASI</div>
                 <div class="doc-container" id="docBoxContainer">
-                    <!-- Foto akan dimuat secara dinamis di dalam kotak besar ini -->
+                    <!-- Foto dimuat dinamis -->
                 </div>
             </div>
 
@@ -456,7 +456,7 @@
             <div class="action-buttons no-print">
                 <button type="submit" class="btn-print">💾 Simpan ke Google Sheets & Cetak PDF</button>
             </div>
-            <div id="saveStatus" class="loading-spinner">Menyimpan laporan ke Google Sheets...</div>
+            <div id="saveStatus" class="loading-spinner">Menyimpan laporan & membuat file PDF di Google Drive...</div>
         </form>
     </div>
 
@@ -464,7 +464,6 @@
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxqbyc6lPKx6VwztQbkTqXJRITMQPyvmnn4tR_TC6gkDFXBvbfANv57WBZrjgYQNnkD/exec";
         let loggedInUsername = "";
 
-        // Fungsi Format Tanggal Indonesia
         function formatTanggalIndonesia(dateString) {
             if (!dateString) return "";
             const date = new Date(dateString);
@@ -589,7 +588,7 @@
             event.preventDefault();
             const statusDiv = document.getElementById('saveStatus');
             statusDiv.style.display = "block";
-            statusDiv.innerText = "Menyimpan data laporan ke Google Sheets...";
+            statusDiv.innerText = "Menyimpan data laporan & membuat file PDF di Google Drive...";
 
             const reportData = {
                 action: "save_report",
@@ -611,7 +610,7 @@
                 const result = await response.json();
 
                 if (result.status === "success") {
-                    statusDiv.innerText = "✅ Berhasil disimpan! Membuka jendela cetak PDF...";
+                    statusDiv.innerText = "✅ Berhasil disimpan & PDF tercatat di Sheets! Membuka dialog cetak...";
                     statusDiv.style.color = "#137333";
                     setTimeout(() => {
                         statusDiv.style.display = "none";
@@ -622,12 +621,11 @@
                     statusDiv.style.color = "#d93025";
                 }
             } catch (error) {
-                statusDiv.innerText = "Gagal terhubung ke Google Sheets.";
+                statusDiv.innerText = "Gagal terhubung ke Google Spreadsheet.";
                 statusDiv.style.color = "#d93025";
             }
         }
 
-        // Pengaturan Tata Letak Foto Halaman 2 (Aman terkontrol agar pas dalam kotak batas bawah)
         function handleImageUpload(event) {
             const files = event.target.files;
             const container = document.getElementById('docBoxContainer');

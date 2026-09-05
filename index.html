@@ -452,13 +452,13 @@
             <div class="action-buttons no-print">
                 <button type="submit" class="btn-print">💾 Simpan ke Google Sheets & Cetak PDF</button>
             </div>
-            <div id="saveStatus" class="loading-spinner">Menyimpan laporan & membuat file PDF di Google Drive...</div>
+            <div id="saveStatus" class="loading-spinner">Menyimpan laporan ke Google Spreadsheet...</div>
         </form>
     </div>
 
     <script>
-        // URL Web App terbaru yang telah di-deploy ulang
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzvY712E3SP03tIjVM7W_0QNt3cE0-Wb4KK4ljTMry8apr5Sd6yOZZ5rignqferbbZ4/exec";
+        // URL Web App terbaru yang telah diperbarui
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwxJTp1jGmfVA8jy9ma0Ll4Ijc304i42Ghzi29Fs8rHNSPeQHVMlBDEfI6wB4tCTaxC/exec";
         let loggedInUsername = "";
 
         function formatTanggalIndonesia(dateString) {
@@ -585,7 +585,7 @@
             event.preventDefault();
             const statusDiv = document.getElementById('saveStatus');
             statusDiv.style.display = "block";
-            statusDiv.innerText = "Menyimpan data laporan & membuat file PDF di Google Drive...";
+            statusDiv.innerText = "Menyimpan data laporan ke Google Spreadsheet...";
 
             const reportData = {
                 action: "save_report",
@@ -607,7 +607,7 @@
                 const result = await response.json();
 
                 if (result.status === "success") {
-                    statusDiv.innerText = "✅ Berhasil disimpan & PDF tercatat di Sheets! Membuka dialog cetak...";
+                    statusDiv.innerText = "✅ Berhasil disimpan ke Spreadsheet! Membuka dialog cetak PDF...";
                     statusDiv.style.color = "#137333";
                     setTimeout(() => {
                         statusDiv.style.display = "none";

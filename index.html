@@ -1,210 +1,788 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <title>Laporan Perjalanan Dinas</title>
-  <style>
-    /* Pengaturan Dasar Kertas & Tampilan */
-    body {
-      font-family: Arial, sans-serif;
-      color: #000;
-      background-color: #eee;
-      margin: 0;
-      padding: 10px;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>"Aladin" Aplikasi Laporan Perjadin</title>
+    <style>
+        :root {
+            --primary-color: #1a73e8;
+            --primary-dark: #1557b0;
+            --bg-color: #f8f9fa;
+            --card-bg: #ffffff;
+            --text-main: #202124;
+            --text-secondary: #5f6368;
+        }
 
-    .page {
-      background: #fff;
-      width: 210mm;
-      min-height: 297mm;
-      padding: 15mm 20mm;
-      margin: 10mm auto;
-      box-shadow: 0 0 5px rgba(0,0,0,0.2);
-      box-sizing: border-box;
-      position: relative;
-    }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+        }
 
-    h2 {
-      text-align: center;
-      font-size: 14pt;
-      margin-bottom: 15px;
-    }
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.5;
+            padding: 20px;
+        }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-bottom: 15px;
-      font-size: 11pt;
-    }
+        .container {
+            max-width: 850px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
 
-    table, th, td {
-      border: 1px solid #000;
-    }
+        /* Auth Screen (Login & Register) */
+        .auth-container {
+            max-width: 400px;
+            margin: 60px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
 
-    th, td {
-      padding: 6px 8px;
-      vertical-align: top;
-    }
+        h2 {
+            text-align: center;
+            margin-bottom: 25px;
+            color: var(--primary-color);
+        }
 
-    /* PERBAIKAN FOTO: Menghilangkan kotak hitam & pas di layar HP */
-    .foto-box {
-      width: 100%;
-      height: 320px; /* Sesuaikan tinggi kotak dokumentasi */
-      border: 1px solid #000;
-      margin-bottom: 15px;
-      box-sizing: border-box;
-      position: relative;
-      background: #fff;
-    }
+        .form-group {
+            margin-bottom: 20px;
+        }
 
-    .foto-box img {
-      width: 100%;
-      height: calc(100% - 30px); /* Menyisakan sedikit ruang untuk label */
-      object-fit: cover; /* KUNCI: Menghilangkan sisi hitam/letterbox */
-      object-position: center;
-      display: block;
-    }
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: bold;
+            color: #000;
+            font-size: 14px;
+        }
 
-    .foto-label {
-      height: 30px;
-      line-height: 30px;
-      padding-left: 10px;
-      font-size: 10pt;
-      border-top: 1px solid #000;
-      background: #fff;
-    }
+        input[type="text"],
+        input[type="password"],
+        input[type="date"],
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
 
-    /* Footer Halaman persis di bawah */
-    .footer-page {
-      position: absolute;
-      bottom: 15mm;
-      left: 20mm;
-      right: 20mm;
-      display: flex;
-      justify-content: space-between;
-      font-size: 9pt;
-      border-top: 1px solid #ddd;
-      padding-top: 5px;
-    }
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
 
-    /* Pengaturan Cetak / Print / PDF */
-    @media print {
-      body {
-        background: none;
-        padding: 0;
-      }
-      .page {
-        margin: 0;
-        box-shadow: none;
-        page-break-after: always;
-        break-after: page;
-      }
-    }
-  </style>
+        textarea {
+            resize: vertical;
+            min-height: 90px;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .toggle-link {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 13px;
+            color: var(--primary-color);
+            cursor: pointer;
+        }
+        .toggle-link:hover {
+            text-decoration: underline;
+        }
+
+        .msg {
+            font-size: 13px;
+            margin-top: 10px;
+            text-align: center;
+        }
+        .error-msg { color: #d93025; }
+        .success-msg { color: #137333; }
+
+        /* App Section */
+        #app-section {
+            display: none;
+        }
+
+        .header-app {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #ccc;
+            padding-bottom: 10px;
+        }
+
+        .app-brand {
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 4px;
+        }
+
+        .user-info {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .btn-logout {
+            background: #d93025;
+            width: auto;
+            padding: 6px 14px;
+            font-size: 13px;
+        }
+        .btn-logout:hover {
+            background: #b31412;
+        }
+
+        /* Halaman Laporan 1 & 2 */
+        .report-page {
+            background: white;
+            width: 100%;
+        }
+
+        .report-title {
+            text-align: center;
+            font-weight: bold;
+            font-size: 16px;
+            margin-bottom: 15px;
+            letter-spacing: 0.5px;
+        }
+
+        .report-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+        }
+
+        .report-table th, .report-table td {
+            border: 1px solid #000;
+            padding: 8px 10px;
+            font-size: 13px;
+            vertical-align: top;
+        }
+
+        .report-table td:nth-child(4) {
+            height: 55px; 
+            padding-top: 12px;
+            padding-bottom: 12px;
+        }
+
+        .section-header {
+            border: 1px solid #000;
+            border-bottom: none;
+            background: #ffffff;
+            text-align: center;
+            font-weight: bold;
+            font-size: 13px;
+            padding: 6px;
+        }
+
+        .box-section-urutan-container {
+            border: 1px solid #000;
+            margin-bottom: 15px;
+        }
+
+        .box-section-urutan-main {
+            min-height: 440px;
+            padding: 10px;
+            text-align: justify;
+            font-size: 13px;
+        }
+
+        .box-section-urutan-sub {
+            border-top: 1px solid #000;
+            min-height: 25px;
+            padding: 4px 10px;
+        }
+
+        .box-section-pejabat-container {
+            border: 1px solid #000;
+            margin-bottom: 15px;
+        }
+
+        .box-section-pejabat-main {
+            min-height: 90px;
+            padding: 10px;
+            font-size: 13px;
+        }
+
+        .page-break {
+            page-break-before: always;
+            margin-top: 40px;
+        }
+
+        /* Bagian Dokumentasi Full-Width dan Utuh Tanpa Terpotong */
+        .doc-container {
+            border: 1px solid #000;
+            height: 870px;
+            max-height: 870px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 0; 
+            overflow: hidden;
+            background-color: #fdfdfd;
+        }
+
+        .doc-box-item {
+            flex: 1;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            border-bottom: 1px solid #000;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .doc-box-item:last-child {
+            border-bottom: none;
+        }
+
+        .photo-card {
+            text-align: center;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .photo-card img {
+            display: block;
+            width: 100%;
+            height: 100%;
+            max-height: 285px;
+            object-fit: contain;
+            background-color: #000;
+            margin: 0;
+        }
+
+        .photo-caption {
+            position: absolute;
+            bottom: 4px;
+            left: 8px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 2px 8px;
+            font-size: 11px;
+            color: #333;
+            border-radius: 3px;
+            font-weight: bold;
+            border: 1px solid #ccc;
+        }
+
+        /* Tombol Hapus Foto Interaktif */
+        .btn-delete-photo {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(217, 48, 37, 0.9);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            z-index: 10;
+        }
+        .btn-delete-photo:hover {
+            background: #b31412;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .btn-print {
+            background-color: #34a853;
+        }
+        .btn-print:hover {
+            background-color: #2e8b57;
+        }
+
+        .loading-spinner {
+            display: none;
+            text-align: center;
+            font-style: italic;
+            color: #666;
+            margin-top: 10px;
+        }
+
+        @media print {
+            body { background: white; padding: 0; }
+            .container { box-shadow: none; padding: 0; max-width: 100%; }
+            .no-print { display: none !important; }
+            input, textarea { border: none; background: transparent; padding: 0; resize: none; font-size: 13px; }
+            .page-break { page-break-before: always; display: block; }
+        }
+    </style>
 </head>
 <body>
 
-  <!-- HALAMAN 1 -->
-  <div class="page">
-    <h2>LAPORAN KEGIATAN</h2>
-    
-    <table>
-      <tr>
-        <th colspan="4" style="text-align: center; background: #f2f2f2;">A. UMUM</th>
-      </tr>
-      <tr>
-        <td width="20%">1. Nama</td>
-        <td width="30%">Uwais Attaky Adwa</td>
-        <td width="25%">4. Anggaran/Kegiatan yang membiayai</td>
-        <td width="25%">054</td>
-      </tr>
-      <tr>
-        <td>2. Tujuan</td>
-        <td>Pengawasan ubinan</td>
-        <td>5. Anggaran/Kegiatan yang diperiksa</td>
-        <td>054</td>
-      </tr>
-      <tr>
-        <td>3. Jadwal</td>
-        <td>5 September 2026</td>
-        <td>6. Tanda tangan Petugas</td>
-        <td></td>
-      </tr>
-    </table>
-
-    <table>
-      <tr>
-        <th style="text-align: center; background: #f2f2f2;">B. URUTAN KEGIATAN (RINGKASAN HASIL)</th>
-      </tr>
-      <tr>
-        <td style="height: 140px;">Perjalanan ke desa</td>
-      </tr>
-    </table>
-
-    <table>
-      <tr>
-        <th style="text-align: center; background: #f2f2f2;">C. PEJABAT DAN TEMPAT YANG DIKUNJUNGI</th>
-      </tr>
-      <tr>
-        <td style="height: 100px;">Kepala desa</td>
-      </tr>
-    </table>
-
-    <div class="footer-page">
-      <span>https://tokoedwestore-bot.github.io/Perjadin/</span>
-      <span>Halaman 1 dari 4</span>
-    </div>
-  </div>
-
-  <!-- HALAMAN 2 -->
-  <div class="page">
-    <h3 style="font-size: 11pt; border-bottom: 2px solid #000; padding-bottom: 5px;">LANJUTAN URUTAN KEGIATAN</h3>
-    <div style="height: 650px;"></div>
-
-    <div class="footer-page">
-      <span>https://tokoedwestore-bot.github.io/Perjadin/</span>
-      <span>Halaman 2 dari 4</span>
-    </div>
-  </div>
-
-  <!-- HALAMAN 3 (DOKUMENTASI 1 & 2) -->
-  <div class="page">
-    <h2>D. DOKUMENTASI</h2>
-    
-    <div class="foto-box">
-      <img src="URL_FOTO_1" alt="Dokumentasi 1">
-      <div class="foto-label">Dokumentasi Foto 1</div>
+    <!-- HALAMAN LOGIN -->
+    <div id="login-section" class="auth-container">
+        <h2>✨ "Aladin"</h2>
+        <p style="text-align: center; font-size: 14px; color: #5f6368; margin-top: -15px; margin-bottom: 25px;">Aplikasi Laporan Perjadin</p>
+        <form id="loginForm" onsubmit="handleLogin(event)">
+            <div class="form-group">
+                <label>Username</label>
+                <input type="text" id="loginUser" required placeholder="Masukkan username">
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="loginPass" required placeholder="Masukkan password">
+            </div>
+            <button type="submit" id="btnLogin">Masuk</button>
+            <div id="loginMsg" class="msg"></div>
+        </form>
+        <div class="toggle-link" onclick="switchAuthMode('register')">Belum punya akun? Daftar di sini</div>
     </div>
 
-    <div class="foto-box">
-      <img src="URL_FOTO_2" alt="Dokumentasi 2">
-      <div class="foto-label">Dokumentasi Foto 2</div>
+    <!-- HALAMAN REGISTER -->
+    <div id="register-section" class="auth-container" style="display: none;">
+        <h2>📝 Daftar Akun Baru</h2>
+        <p style="text-align: center; font-size: 14px; color: #5f6368; margin-top: -15px; margin-bottom: 25px;">"Aladin" - Aplikasi Laporan Perjadin</p>
+        <form id="registerForm" onsubmit="handleRegister(event)">
+            <div class="form-group">
+                <label>Nama Lengkap</label>
+                <input type="text" id="regNama" required placeholder="Nama lengkap petugas">
+            </div>
+            <div class="form-group">
+                <label>Username</label>
+                <input type="text" id="regUser" required placeholder="Buat username">
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="regPass" required placeholder="Buat password">
+            </div>
+            <button type="submit" id="btnReg">Daftar</button>
+            <div id="regMsg" class="msg"></div>
+        </form>
+        <div class="toggle-link" onclick="switchAuthMode('login')">Sudah punya akun? Login di sini</div>
     </div>
 
-    <div class="footer-page">
-      <span>https://tokoedwestore-bot.github.io/Perjadin/</span>
-      <span>Halaman 3 dari 4</span>
-    </div>
-  </div>
+    <!-- HALAMAN UTAMA FORMULIR & LAPORAN -->
+    <div id="app-section" class="container">
+        <div class="header-app no-print">
+            <div>
+                <div class="app-brand">✨ "Aladin"</div>
+                <div class="user-info">Aplikasi Laporan Perjadin | Petugas: <b id="displayUser">Admin</b></div>
+            </div>
+            <button class="btn-logout" onclick="handleLogout()">Logout</button>
+        </div>
 
-  <!-- HALAMAN 4 (DOKUMENTASI 3 / KOSONG) -->
-  <div class="page">
-    <h2>D. DOKUMENTASI (Lanjutan)</h2>
-    
-    <div class="foto-box">
-      <img src="URL_FOTO_3" alt="Dokumentasi 3">
-      <div class="foto-label">Dokumentasi Foto 3</div>
+        <form id="reportForm" onsubmit="saveReportToCloud(event)">
+            
+            <!-- FORMULIR INPUT -->
+            <div class="no-print" style="background: #f1f3f4; padding: 20px; border-radius: 8px; margin-bottom: 30px;">
+                <h3 style="margin-bottom: 15px; color: #1a73e8;">Formulir Pengisian Laporan</h3>
+                
+                <div class="form-group">
+                    <label>Nama:</label>
+                    <input type="text" id="inputNama" required placeholder="Masukkan Nama Petugas">
+                </div>
+
+                <div class="form-group">
+                    <label>Tujuan:</label>
+                    <textarea id="inputTujuan" required placeholder="Masukkan Tujuan Pengawasan"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Jadwal:</label>
+                    <input type="date" id="inputJadwal" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Anggaran/Kegiatan yang membiayai:</label>
+                    <input type="text" id="inputAnggaranBiaya" value="054">
+                </div>
+
+                <div class="form-group">
+                    <label>Anggaran/Kegiatan yang diperiksa:</label>
+                    <input type="text" id="inputAnggaranPeriksa" value="054">
+                </div>
+
+                <div class="form-group">
+                    <label>Urutan Kegiatan:</label>
+                    <textarea id="inputUrutan" required placeholder="Uraikan urutan kegiatan dan ringkasan hasil..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Pejabat dan Tempat yang Dikunjungi:</label>
+                    <textarea id="inputPejabat" required placeholder="Sebutkan nama pejabat dan tempat yang dikunjungi..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Dokumentasi Foto (Bisa tambah foto satu persatu atau sekaligus, Maksimal 3 foto):</label>
+                    <input type="file" id="uploadFoto" accept="image/*" multiple onchange="handleImageUpload(event)">
+                    <small style="color: #5f6368; display: block; margin-top: 5px;">*Jika Anda upload 1 foto, lalu upload foto berikutnya, foto akan bertambah (akumulasi) hingga maksimal 3 foto.</small>
+                </div>
+            </div>
+
+            <!-- PREVIEW / HASIL CETAK HALAMAN 1 -->
+            <div class="report-page">
+                <div class="report-title">LAPORAN KEGIATAN</div>
+
+                <table class="report-table" style="margin-bottom: 0;">
+                    <tr>
+                        <th colspan="4" style="background: #ffffff; text-align: center;">A. UMUM</th>
+                    </tr>
+                    <tr>
+                        <td style="width: 15%;">1. Nama</td>
+                        <td style="width: 35%;"><span id="previewNama"></span></td>
+                        <td style="width: 25%;">4. Anggaran/Kegiatan yang membiayai</td>
+                        <td style="width: 25%;"><span id="previewAnggaranBiaya">054</span></td>
+                    </tr>
+                    <tr>
+                        <td>2. Tujuan</td>
+                        <td><span id="previewTujuan"></span></td>
+                        <td>5. Anggaran/Kegiatan yang diperiksa</td>
+                        <td>054</td>
+                    </tr>
+                    <tr>
+                        <td>3. Jadwal</td>
+                        <td><span id="previewJadwal"></span></td>
+                        <td>6. Tanda tangan Petugas</td>
+                        <td></td>
+                    </tr>
+                </table>
+
+                <!-- Bagian B -->
+                <div class="section-header" style="margin-top: 15px;">B. URUTAN KEGIATAN (RINGKASAN HASIL)</div>
+                <div class="box-section-urutan-container">
+                    <div class="box-section-urutan-main">
+                        <span id="previewUrutan" style="white-space: pre-wrap;"></span>
+                    </div>
+                    <div class="box-section-urutan-sub"></div>
+                </div>
+
+                <!-- Bagian C -->
+                <div class="section-header">C. PEJABAT DAN TEMPAT YANG DIKUNJUNGI</div>
+                <div class="box-section-pejabat-container">
+                    <div class="box-section-pejabat-main">
+                        <span id="previewPejabat" style="white-space: pre-wrap;"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- HALAMAN 2: DOKUMENTASI -->
+            <div class="page-break"></div>
+            <div class="report-page">
+                <div class="section-header" style="margin-bottom: 0;">D. DOKUMENTASI</div>
+                <div class="doc-container" id="docBoxContainer">
+                    <!-- Foto dimuat dinamis -->
+                </div>
+            </div>
+
+            <!-- TOMBOL AKSI -->
+            <div class="action-buttons no-print">
+                <button type="submit" class="btn-print">💾 Simpan ke Google Sheets & Cetak PDF</button>
+            </div>
+            <div id="saveStatus" class="loading-spinner">Menyimpan laporan ke Google Spreadsheet...</div>
+        </form>
     </div>
 
-    <div class="foto-box" style="display: flex; align-items: center; justify-content: center; background: #fafafa;">
-      <span style="color: #666; font-style: italic;">[ Kosong - Slot Dokumentasi Foto 3 ]</span>
-    </div>
+    <script>
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwQ-bmfkstTg4Q1_qB6ZJn66hs77c3zRAyt9gQaT_xsLJEYL5U8imkMsHmzO5VUY3II/exec";
+        let loggedInUsername = "";
+        let uploadedPhotos = []; // Menyimpan array foto yang terakumulasi
 
-    <div class="footer-page">
-      <span>https://tokoedwestore-bot.github.io/Perjadin/</span>
-      <span>Halaman 4 dari 4</span>
-    </div>
-  </div>
+        function formatTanggalIndonesia(dateString) {
+            if (!dateString) return "";
+            const date = new Date(dateString);
+            if (isNaN(date)) return dateString;
+            const options = { day: 'numeric', month: 'long', year: 'numeric' };
+            return date.toLocaleDateString('id-ID', options);
+        }
 
+        const fields = ['Nama', 'Tujuan', 'AnggaranBiaya', 'AnggaranPeriksa', 'Urutan', 'Pejabat'];
+        fields.forEach(field => {
+            const inputEl = document.getElementById('input' + field);
+            const previewEl = document.getElementById('preview' + field);
+            if(inputEl && previewEl) {
+                inputEl.addEventListener('input', () => {
+                    previewEl.innerText = inputEl.value;
+                });
+            }
+        });
+
+        const inputJadwalEl = document.getElementById('inputJadwal');
+        const previewJadwalEl = document.getElementById('previewJadwal');
+        if(inputJadwalEl && previewJadwalEl) {
+            inputJadwalEl.addEventListener('input', () => {
+                previewJadwalEl.innerText = formatTanggalIndonesia(inputJadwalEl.value);
+            });
+        }
+
+        function switchAuthMode(mode) {
+            document.getElementById('loginMsg').innerText = "";
+            document.getElementById('regMsg').innerText = "";
+            
+            if (mode === 'register') {
+                document.getElementById('login-section').style.display = 'none';
+                document.getElementById('register-section').style.display = 'block';
+            } else {
+                document.getElementById('register-section').style.display = 'none';
+                document.getElementById('login-section').style.display = 'block';
+            }
+        }
+
+        async function handleRegister(event) {
+            event.preventDefault();
+            const nama_lengkap = document.getElementById('regNama').value.trim();
+            const username = document.getElementById('regUser').value.trim();
+            const password = document.getElementById('regPass').value.trim();
+            const msgDiv = document.getElementById('regMsg');
+            const btn = document.getElementById('btnReg');
+
+            msgDiv.innerText = "Mendaftarkan akun...";
+            msgDiv.className = "msg";
+            btn.disabled = true;
+
+            try {
+                const response = await fetch(SCRIPT_URL, {
+                    method: "POST",
+                    body: JSON.stringify({ action: "register", nama_lengkap, username, password })
+                });
+                const result = await response.json();
+
+                if (result.status === "success") {
+                    msgDiv.innerText = result.message;
+                    msgDiv.className = "msg success-msg";
+                    setTimeout(() => {
+                        switchAuthMode('login');
+                        document.getElementById('registerForm').reset();
+                    }, 1500);
+                } else {
+                    msgDiv.innerText = result.message;
+                    msgDiv.className = "msg error-msg";
+                }
+            } catch (error) {
+                msgDiv.innerText = "Terjadi kesalahan koneksi atau deployment belum diatur 'Anyone'.";
+                msgDiv.className = "msg error-msg";
+            }
+            btn.disabled = false;
+        }
+
+        async function handleLogin(event) {
+            event.preventDefault();
+            const username = document.getElementById('loginUser').value.trim();
+            const password = document.getElementById('loginPass').value.trim();
+            const msgDiv = document.getElementById('loginMsg');
+            const btn = document.getElementById('btnLogin');
+
+            msgDiv.innerText = "Memeriksa kredensial...";
+            msgDiv.className = "msg";
+            btn.disabled = true;
+
+            try {
+                const response = await fetch(SCRIPT_URL, {
+                    method: "POST",
+                    body: JSON.stringify({ action: "login", username, password })
+                });
+                const result = await response.json();
+
+                if (result.status === "success") {
+                    loggedInUsername = username;
+                    document.getElementById('login-section').style.display = 'none';
+                    document.getElementById('app-section').style.display = 'block';
+                    document.getElementById('displayUser').innerText = result.nama_lengkap;
+                    
+                    document.getElementById('inputNama').value = result.nama_lengkap;
+                    document.getElementById('previewNama').innerText = result.nama_lengkap;
+                    
+                    const today = new Date().toISOString().split('T')[0];
+                    document.getElementById('inputJadwal').value = today;
+                    document.getElementById('previewJadwal').innerText = formatTanggalIndonesia(today);
+                } else {
+                    msgDiv.innerText = result.message;
+                    msgDiv.className = "msg error-msg";
+                }
+            } catch (error) {
+                msgDiv.innerText = "Terjadi kesalahan koneksi atau deployment belum diatur 'Anyone'.";
+                msgDiv.className = "msg error-msg";
+            }
+            btn.disabled = false;
+        }
+
+        function handleLogout() {
+            loggedInUsername = "";
+            document.getElementById('app-section').style.display = 'none';
+            document.getElementById('login-section').style.display = 'block';
+            document.getElementById('loginForm').reset();
+            document.getElementById('registerForm').reset();
+        }
+
+        async function saveReportToCloud(event) {
+            event.preventDefault();
+            const statusDiv = document.getElementById('saveStatus');
+            statusDiv.style.display = "block";
+            statusDiv.innerText = "Menyimpan data laporan ke Google Spreadsheet...";
+
+            const reportData = {
+                action: "save_report",
+                username: loggedInUsername,
+                nama: document.getElementById('inputNama').value,
+                tujuan: document.getElementById('inputTujuan').value,
+                jadwal: document.getElementById('inputJadwal').value,
+                anggaran_biaya: document.getElementById('inputAnggaranBiaya').value,
+                anggaran_periksa: document.getElementById('inputAnggaranPeriksa').value,
+                urutan: document.getElementById('inputUrutan').value,
+                pejabat: document.getElementById('inputPejabat').value
+            };
+
+            try {
+                const response = await fetch(SCRIPT_URL, {
+                    method: "POST",
+                    body: JSON.stringify(reportData)
+                });
+                const result = await response.json();
+
+                if (result.status === "success") {
+                    statusDiv.innerText = "✅ Berhasil disimpan ke Spreadsheet! Membuka dialog cetak PDF...";
+                    statusDiv.style.color = "#137333";
+                    setTimeout(() => {
+                        statusDiv.style.display = "none";
+                        window.print();
+                    }, 1000);
+                } else {
+                    statusDiv.innerText = "Gagal menyimpan: " + result.message;
+                    statusDiv.style.color = "#d93025";
+                }
+            } catch (error) {
+                statusDiv.innerText = "Gagal terhubung ke Google Spreadsheet.";
+                statusDiv.style.color = "#d93025";
+            }
+        }
+
+        // Fungsi Penanganan Foto Akumulatif (Satu per satu / multiple dengan batas 3)
+        function handleImageUpload(event) {
+            const files = event.target.files;
+            if (!files || files.length === 0) return;
+
+            // Hitung kapasitas yang tersisa
+            const remainingSlots = 3 - uploadedPhotos.length;
+            if (remainingSlots <= 0) {
+                alert("Maksimal sudah 3 foto dokumentasi tercapai. Hapus salah satu foto jika ingin menggantinya.");
+                document.getElementById('uploadFoto').value = '';
+                return;
+            }
+
+            const filesToProcess = Array.from(files).slice(0, remainingSlots);
+            if (files.length > remainingSlots) {
+                alert(`Hanya ${remainingSlots} foto yang ditambahkan karena batas maksimal adalah 3 foto.`);
+            }
+
+            let processedCount = 0;
+            filesToProcess.forEach((file) => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    uploadedPhotos.push(e.target.result);
+                    processedCount++;
+                    
+                    if (processedCount === filesToProcess.length) {
+                        renderPhotos();
+                        document.getElementById('uploadFoto').value = ''; // Reset input file agar bisa pilih file yang sama lagi jika perlu
+                    }
+                }
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function removePhoto(index) {
+            uploadedPhotos.splice(index, 1);
+            renderPhotos();
+        }
+
+        function renderPhotos() {
+            const container = document.getElementById('docBoxContainer');
+            container.innerHTML = '';
+
+            // Tampilkan foto yang sudah ada di array
+            uploadedPhotos.forEach((src, index) => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'doc-box-item';
+
+                const card = document.createElement('div');
+                card.className = 'photo-card';
+
+                const img = document.createElement('img');
+                img.src = src;
+
+                const caption = document.createElement('div');
+                caption.className = 'photo-caption';
+                caption.innerText = `Dokumentasi Foto ${index + 1}`;
+
+                // Tombol hapus hanya muncul di layar (no-print)
+                const deleteBtn = document.createElement('button');
+                deleteBtn.className = 'btn-delete-photo no-print';
+                deleteBtn.innerHTML = '&times;';
+                deleteBtn.title = 'Hapus foto ini';
+                deleteBtn.onclick = () => removePhoto(index);
+
+                card.appendChild(img);
+                card.appendChild(caption);
+                card.appendChild(deleteBtn);
+                itemDiv.appendChild(card);
+                container.appendChild(itemDiv);
+            });
+
+            // Jika kurang dari 3 foto, tambahkan kotak kosong placeholder agar layout tetap rapih proporsional
+            for (let i = uploadedPhotos.length; i < 3; i++) {
+                const emptyDiv = document.createElement('div');
+                emptyDiv.className = 'doc-box-item';
+                emptyDiv.style.display = 'flex';
+                emptyDiv.style.alignItems = 'center';
+                emptyDiv.style.justifyContent = 'center';
+                emptyDiv.style.color = '#aaa';
+                emptyDiv.style.fontSize = '12px';
+                emptyDiv.style.background = '#fafafa';
+                emptyDiv.innerHTML = `<span>[ Kosong - Slot Dokumentasi Foto ${i + 1} ]</span>`;
+                container.appendChild(emptyDiv);
+            }
+        }
+
+        // Panggil render awal saat halaman dimuat
+        window.onload = function() {
+            renderPhotos();
+        };
+    </script>
 </body>
 </html>

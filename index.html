@@ -2,34 +2,29 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Laporan Perjalanan Dinas</title>
   <style>
-    /* Pengaturan Umum Halaman & Kertas */
+    /* Pengaturan Dasar Kertas & Tampilan */
     body {
       font-family: Arial, sans-serif;
       color: #000;
-      background-color: #555;
+      background-color: #eee;
       margin: 0;
-      padding: 20px;
+      padding: 10px;
     }
 
     .page {
-      background: white;
+      background: #fff;
       width: 210mm;
       min-height: 297mm;
-      padding: 20mm;
+      padding: 15mm 20mm;
       margin: 10mm auto;
-      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+      box-shadow: 0 0 5px rgba(0,0,0,0.2);
       box-sizing: border-box;
       position: relative;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
     }
 
-    /* Judul dan Tabel */
-    h2, h3 {
+    h2 {
       text-align: center;
       font-size: 14pt;
       margin-bottom: 15px;
@@ -47,44 +42,48 @@
     }
 
     th, td {
-      padding: 8px;
+      padding: 6px 8px;
       vertical-align: top;
     }
 
-    /* Perbaikan Kotak Foto & Menghilangkan Background Hitam */
-    .foto-container {
+    /* PERBAIKAN FOTO: Menghilangkan kotak hitam & pas di layar HP */
+    .foto-box {
       width: 100%;
-      height: 220px; /* Batasi tinggi kotak agar konsisten */
+      height: 320px; /* Sesuaikan tinggi kotak dokumentasi */
       border: 1px solid #000;
-      margin-bottom: 10px;
-      display: flex;
-      flex-direction: column;
+      margin-bottom: 15px;
       box-sizing: border-box;
-      background-color: #fff;
+      position: relative;
+      background: #fff;
     }
 
-    .foto-container img {
+    .foto-box img {
       width: 100%;
-      height: 185px;
-      object-fit: cover; /* Mencegah distorsi dan menghilangkan sisi hitam */
+      height: calc(100% - 30px); /* Menyisakan sedikit ruang untuk label */
+      object-fit: cover; /* KUNCI: Menghilangkan sisi hitam/letterbox */
       object-position: center;
       display: block;
     }
 
-    .keterangan-foto {
+    .foto-label {
+      height: 30px;
+      line-height: 30px;
+      padding-left: 10px;
       font-size: 10pt;
-      padding: 4px 8px;
-      background: #f0f0f0;
       border-top: 1px solid #000;
+      background: #fff;
     }
 
-    /* Footer Halaman */
+    /* Footer Halaman persis di bawah */
     .footer-page {
+      position: absolute;
+      bottom: 15mm;
+      left: 20mm;
+      right: 20mm;
       display: flex;
       justify-content: space-between;
       font-size: 9pt;
-      margin-top: 20px;
-      border-top: 1px solid #ccc;
+      border-top: 1px solid #ddd;
       padding-top: 5px;
     }
 
@@ -99,60 +98,57 @@
         box-shadow: none;
         page-break-after: always;
         break-after: page;
-        height: 297mm;
       }
     }
   </style>
 </head>
 <body>
 
-  <!-- HALAMAN 1: UMUM, RINGKASAN, PEJABAT -->
+  <!-- HALAMAN 1 -->
   <div class="page">
-    <div>
-      <h2>LAPORAN KEGIATAN</h2>
-      
-      <table>
-        <tr>
-          <th colspan="4" style="text-align: center; background: #eee;">A. UMUM</th>
-        </tr>
-        <tr>
-          <td width="20%">1. Nama</td>
-          <td width="30%">Uwais Attaky Adwa</td>
-          <td width="25%">4. Anggaran/Kegiatan yang membiayai</td>
-          <td width="25%">054</td>
-        </tr>
-        <tr>
-          <td>2. Tujuan</td>
-          <td>Pengawasan ubinan</td>
-          <td>5. Anggaran/Kegiatan yang diperiksa</td>
-          <td>054</td>
-        </tr>
-        <tr>
-          <td>3. Jadwal</td>
-          <td>5 September 2026</td>
-          <td>6. Tanda tangan Petugas</td>
-          <td></td>
-        </tr>
-      </table>
+    <h2>LAPORAN KEGIATAN</h2>
+    
+    <table>
+      <tr>
+        <th colspan="4" style="text-align: center; background: #f2f2f2;">A. UMUM</th>
+      </tr>
+      <tr>
+        <td width="20%">1. Nama</td>
+        <td width="30%">Uwais Attaky Adwa</td>
+        <td width="25%">4. Anggaran/Kegiatan yang membiayai</td>
+        <td width="25%">054</td>
+      </tr>
+      <tr>
+        <td>2. Tujuan</td>
+        <td>Pengawasan ubinan</td>
+        <td>5. Anggaran/Kegiatan yang diperiksa</td>
+        <td>054</td>
+      </tr>
+      <tr>
+        <td>3. Jadwal</td>
+        <td>5 September 2026</td>
+        <td>6. Tanda tangan Petugas</td>
+        <td></td>
+      </tr>
+    </table>
 
-      <table>
-        <tr>
-          <th style="text-align: center; background: #eee;">B. URUTAN KEGIATAN (RINGKASAN HASIL)</th>
-        </tr>
-        <tr>
-          <td style="height: 120px;">Perjalanan ke desa</td>
-        </tr>
-      </table>
+    <table>
+      <tr>
+        <th style="text-align: center; background: #f2f2f2;">B. URUTAN KEGIATAN (RINGKASAN HASIL)</th>
+      </tr>
+      <tr>
+        <td style="height: 140px;">Perjalanan ke desa</td>
+      </tr>
+    </table>
 
-      <table>
-        <tr>
-          <th style="text-align: center; background: #eee;">C. PEJABAT DAN TEMPAT YANG DIKUNJUNGI</th>
-        </tr>
-        <tr>
-          <td style="height: 80px;">Kepala desa</td>
-        </tr>
-      </table>
-    </div>
+    <table>
+      <tr>
+        <th style="text-align: center; background: #f2f2f2;">C. PEJABAT DAN TEMPAT YANG DIKUNJUNGI</th>
+      </tr>
+      <tr>
+        <td style="height: 100px;">Kepala desa</td>
+      </tr>
+    </table>
 
     <div class="footer-page">
       <span>https://tokoedwestore-bot.github.io/Perjadin/</span>
@@ -160,14 +156,10 @@
     </div>
   </div>
 
-  <!-- HALAMAN 2: KONTINUITAS LAPORAN / URAIAN LANJUTAN -->
+  <!-- HALAMAN 2 -->
   <div class="page">
-    <div>
-      <h3 style="text-align: left; font-size: 11pt; border-bottom: 2px solid #000; padding-bottom: 5px;">LANJUTAN URUTAN KEGIATAN</h3>
-      <div style="height: 600px;">
-        <!-- Konten lanjutan uraian kegiatan jika ada -->
-      </div>
-    </div>
+    <h3 style="font-size: 11pt; border-bottom: 2px solid #000; padding-bottom: 5px;">LANJUTAN URUTAN KEGIATAN</h3>
+    <div style="height: 650px;"></div>
 
     <div class="footer-page">
       <span>https://tokoedwestore-bot.github.io/Perjadin/</span>
@@ -175,22 +167,18 @@
     </div>
   </div>
 
-  <!-- HALAMAN 3: DOKUMENTASI BAGIAN 1 -->
+  <!-- HALAMAN 3 (DOKUMENTASI 1 & 2) -->
   <div class="page">
-    <div>
-      <h2>D. Dokumentasi Kegiatan</h2>
-      
-      <!-- Slot Foto 1 -->
-      <div class="foto-container">
-        <img src="URL_FOTO_1_ANDA" alt="Dokumentasi Foto 1">
-        <div class="keterangan-foto">Dokumentasi Foto 1</div>
-      </div>
+    <h2>D. DOKUMENTASI</h2>
+    
+    <div class="foto-box">
+      <img src="URL_FOTO_1" alt="Dokumentasi 1">
+      <div class="foto-label">Dokumentasi Foto 1</div>
+    </div>
 
-      <!-- Slot Foto 2 -->
-      <div class="foto-container">
-        <img src="URL_FOTO_2_ANDA" alt="Dokumentasi Foto 2">
-        <div class="keterangan-foto">Dokumentasi Foto 2</div>
-      </div>
+    <div class="foto-box">
+      <img src="URL_FOTO_2" alt="Dokumentasi 2">
+      <div class="foto-label">Dokumentasi Foto 2</div>
     </div>
 
     <div class="footer-page">
@@ -199,21 +187,17 @@
     </div>
   </div>
 
-  <!-- HALAMAN 4: DOKUMENTASI BAGIAN 2 -->
+  <!-- HALAMAN 4 (DOKUMENTASI 3 / KOSONG) -->
   <div class="page">
-    <div>
-      <h2>D. Dokumentasi Kegiatan (Lanjutan)</h2>
-      
-      <!-- Slot Foto 3 -->
-      <div class="foto-container">
-        <img src="URL_FOTO_3_ANDA" alt="Dokumentasi Foto 3">
-        <div class="keterangan-foto">Dokumentasi Foto 3</div>
-      </div>
+    <h2>D. DOKUMENTASI (Lanjutan)</h2>
+    
+    <div class="foto-box">
+      <img src="URL_FOTO_3" alt="Dokumentasi 3">
+      <div class="foto-label">Dokumentasi Foto 3</div>
+    </div>
 
-      <!-- Slot Foto Kosong / Cadangan -->
-      <div class="foto-container" style="border: 1px dashed #77f; display: flex; align-items: center; justify-content: center; background: #fafafa;">
-        <span style="color: #666; font-style: italic;">[ Kosong - Slot Dokumentasi Foto Cadangan ]</span>
-      </div>
+    <div class="foto-box" style="display: flex; align-items: center; justify-content: center; background: #fafafa;">
+      <span style="color: #666; font-style: italic;">[ Kosong - Slot Dokumentasi Foto 3 ]</span>
     </div>
 
     <div class="footer-page">

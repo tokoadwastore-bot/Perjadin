@@ -229,16 +229,17 @@
             margin-top: 40px;
         }
 
-        /* Bagian Dokumentasi Full-Width ke Samping Garis */
+        /* Bagian Dokumentasi Full-Width dan Utuh Tanpa Terpotong */
         .doc-container {
             border: 1px solid #000;
             height: 870px;
             max-height: 870px;
             display: flex;
             flex-direction: column;
-            justify-content: flex-start;
-            padding: 0; /* Padding 0 agar foto bisa mentok sampai garis tepi */
+            justify-content: space-between;
+            padding: 0; 
             overflow: hidden;
+            background-color: #fdfdfd;
         }
 
         .doc-box-item {
@@ -249,8 +250,9 @@
             align-items: center;
             justify-content: center;
             position: relative;
-            border-bottom: 1px dashed #ccc;
+            border-bottom: 1px solid #000;
             width: 100%;
+            overflow: hidden;
         }
 
         .doc-box-item:last-child {
@@ -271,9 +273,10 @@
         .photo-card img {
             display: block;
             width: 100%;
-            height: 225px; /* Mengisi tinggi kotak secara proporsional */
-            max-height: 225px;
-            object-fit: cover; /* Menjaga aspek rasio foto tanpa distorsi berlebih */
+            height: 100%;
+            max-height: 285px; /* Menyesuaikan tinggi agar 3 foto pas dan utuh dalam kotak */
+            object-fit: contain; /* Memastikan seluruh gambar tampil proporsional tanpa terpotong */
+            background-color: #000; /* Latar belakang elegan jika rasio foto berbeda */
             margin: 0;
         }
 
@@ -281,12 +284,13 @@
             position: absolute;
             bottom: 4px;
             left: 8px;
-            background: rgba(255, 255, 255, 0.85);
+            background: rgba(255, 255, 255, 0.9);
             padding: 2px 8px;
             font-size: 11px;
             color: #333;
             border-radius: 3px;
             font-weight: bold;
+            border: 1px solid #ccc;
         }
 
         .action-buttons {
@@ -479,7 +483,7 @@
     </div>
 
     <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwxJTp1jGmfVA8jy9ma0Ll4Ijc304i42Ghzi29Fs8rHNSPeQHVMlBDEfI6wB4tCTaxC/exec";
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyAM6r0dKj4ymx32IF3swO08vEkM9viKoU2qpYNJuZ2BggC7VV_c46X6zRLY6FaSFs/exec";
         let loggedInUsername = "";
 
         function formatTanggalIndonesia(dateString) {

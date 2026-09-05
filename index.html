@@ -189,7 +189,7 @@
             padding: 6px;
         }
 
-        /* Struktur Kotak Bagian B Sesuai Gambar Persis (Kotak Besar + Kotak Kecil di Bawahnya) */
+        /* Struktur Kotak Bagian B Sesuai Gambar Persis */
         .box-section-urutan-container {
             border: 1px solid #000;
             margin-bottom: 15px;
@@ -198,7 +198,7 @@
         .box-section-urutan-main {
             min-height: 310px;
             padding: 10px;
-            text-align: justify; /* Rata kanan kiri sesuai permintaan */
+            text-align: justify; /* Rata kanan kiri */
             font-size: 13px;
         }
 
@@ -220,7 +220,7 @@
             font-size: 13px;
         }
 
-        /* Halaman Kedua khusus Dokumentasi (3 Kotak Susun Sesuai Gambar Page 2) */
+        /* Halaman Kedua khusus Dokumentasi (3 Kotak Susun, Foto Landscape) */
         .page-break {
             page-break-before: always;
             margin-top: 40px;
@@ -253,11 +253,13 @@
             max-height: 100%;
         }
 
+        /* Mengoptimalkan foto agar tampil secara landscape mengisi kotak */
         .photo-card img {
             display: block;
             margin: 0 auto;
-            object-fit: contain;
-            max-height: 230px;
+            object-fit: cover;
+            width: 380px;
+            height: 230px;
             max-width: 100%;
         }
 
@@ -382,12 +384,12 @@
                 </div>
 
                 <div class="form-group">
-                    <label>Dokumentasi (Upload Foto, Maksimal 3):</label>
+                    <label>Dokumentasi (Upload Foto Lanskap, Maksimal 3):</label>
                     <input type="file" id="uploadFoto" accept="image/*" multiple onchange="handleImageUpload(event)">
                 </div>
             </div>
 
-            <!-- PREVIEW / HASIL CETAK HALAMAN 1 (PERSIS GAMBAR 1) -->
+            <!-- PREVIEW / HASIL CETAK HALAMAN 1 -->
             <div class="report-page">
                 <div class="report-title">LAPORAN KEGIATAN</div>
 
@@ -411,11 +413,11 @@
                         <td>3. Jadwal</td>
                         <td><span id="previewJadwal"></span></td>
                         <td>6. Tanda tangan Petugas</td>
-                        <td><span style="color: #777; font-style: italic;">(Kosong)</span></td>
+                        <td></td>
                     </tr>
                 </table>
 
-                <!-- Bagian B Sesuai Layout Referensi -->
+                <!-- Bagian B -->
                 <div class="section-header" style="margin-top: 15px;">B. URUTAN KEGIATAN (RINGKASAN HASIL)</div>
                 <div class="box-section-urutan-container">
                     <div class="box-section-urutan-main">
@@ -424,7 +426,7 @@
                     <div class="box-section-urutan-sub"></div>
                 </div>
 
-                <!-- Bagian C Sesuai Layout Referensi -->
+                <!-- Bagian C -->
                 <div class="section-header">C. PEJABAT DAN TEMPAT YANG DIKUNJUNGI</div>
                 <div class="box-section-pejabat-container">
                     <div class="box-section-pejabat-main">
@@ -433,7 +435,7 @@
                 </div>
             </div>
 
-            <!-- HALAMAN 2: DOKUMENTASI (PERSIS GAMBAR 2) -->
+            <!-- HALAMAN 2: DOKUMENTASI (Landscape) -->
             <div class="page-break"></div>
             <div class="report-page">
                 <div class="section-header" style="margin-bottom: 0;">D. DOKUMENTASI</div>
@@ -627,7 +629,7 @@
             }
         }
 
-        // Pengaturan Tata Letak Foto Halaman 2 (3 Kotak Susun Sesuai Gambar Referensi Page 2)
+        // Pengaturan Tata Letak Foto Halaman 2 (Landscape penuh pada kotak)
         function handleImageUpload(event) {
             const files = event.target.files;
             

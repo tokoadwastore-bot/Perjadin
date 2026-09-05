@@ -193,19 +193,26 @@
             padding-bottom: 5px;
         }
 
+        /* Halaman Kedua khusus Dokumentasi saat diprint */
+        .page-break {
+            page-break-before: always;
+            margin-top: 40px;
+        }
+
         .photo-wrapper {
             display: flex;
             justify-content: center;
             align-items: center;
             flex-wrap: wrap;
             gap: 20px;
-            margin-top: 15px;
+            margin-top: 20px;
+            min-height: 400px;
         }
 
         .photo-card {
             text-align: center;
             border: 1px dashed var(--border-color);
-            padding: 10px;
+            padding: 15px;
             border-radius: 8px;
             background: #fafafa;
         }
@@ -215,6 +222,7 @@
             margin: 0 auto;
             border-radius: 4px;
             object-fit: contain;
+            max-height: 450px;
         }
 
         .action-buttons {
@@ -243,6 +251,7 @@
             .container { box-shadow: none; padding: 0; max-width: 100%; }
             .no-print { display: none !important; }
             input, textarea { border: none; background: transparent; padding: 0; resize: none; }
+            .page-break { page-break-before: always; }
         }
     </style>
 </head>
@@ -316,7 +325,7 @@
                     <td class="label-cell">3. Jadwal</td>
                     <td class="input-cell"><input type="date" id="repJadwal" required></td>
                     <td class="label-cell">6. Tanda tangan Petugas</td>
-                    <td class="input-cell"><input type="text" value="(Kosong / Manual)" disabled style="color: #888; font-style: italic;"></td>
+                    <td class="input-cell"><input type="text" value="(Kosong)" disabled style="color: #888; font-style: italic;"></td>
                 </tr>
             </table>
 
@@ -330,13 +339,17 @@
                 <textarea id="repPejabat" required style="min-height: 80px;" placeholder="Sebutkan nama pejabat dan instansi yang dikunjungi..."></textarea>
             </div>
 
+            <!-- HALAMAN KEDUA: DOKUMENTASI -->
+            <div class="page-break"></div>
             <div class="section-heading">D. DOKUMENTASI</div>
             <div class="form-group no-print">
                 <label>Upload Foto Dokumentasi (Maksimal 2 foto)</label>
                 <input type="file" id="uploadFoto" accept="image/*" multiple onchange="handleImageUpload(event)">
             </div>
             
-            <div id="photoContainer" class="photo-wrapper"></div>
+            <div id="photoContainer" class="photo-wrapper">
+                <p style="color: #888; font-style: italic;">Belum ada foto dokumentasi yang diunggah.</p>
+            </div>
 
             <div class="action-buttons no-print">
                 <button type="submit" class="btn-print" style="background-color: #1a73e8;">💾 Simpan ke Google Sheets & Cetak PDF</button>
@@ -346,7 +359,6 @@
     </div>
 
     <script>
-        // URL Google Apps Script yang sudah terintegrasi
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxqbyc6lPKx6VwztQbkTqXJRITMQPyvmnn4tR_TC6gkDFXBvbfANv57WBZrjgYQNnkD/exec";
         let loggedInUsername = "";
 
@@ -360,7 +372,6 @@
             }
         }
 
-        // Fungsi Daftar (Register)
         async function handleRegister(event) {
             event.preventDefault();
             const nama_lengkap = document.getElementById('regNama').value.trim();
@@ -395,7 +406,6 @@
             btn.disabled = false;
         }
 
-        // Fungsi Login
         async function handleLogin(event) {
             event.preventDefault();
             const username = document.getElementById('loginUser').value.trim();
@@ -442,7 +452,6 @@
             document.getElementById('registerForm').reset();
         }
 
-        // Simpan Laporan ke Google Sheets lalu Print/PDF
         async function saveReportToCloud(event) {
             event.preventDefault();
             const statusDiv = document.getElementById('saveStatus');
@@ -451,14 +460,14 @@
 
             const reportData = {
                 action: "save_report",
-                username: loggedInUsername,
-                nama: document.getElementById('repNama').value,
-                tujuan: document.getElementById('repTujuan').value,
-                jadwal: document.getElementById('repJadwal').value,
-                anggaran_biaya: document.getElementById('repAnggaranBiaya').value,
-                anggaran_periksa: document.getElementById('repAnggaranPeriksa').value,
-                urutan: document.getElementById('repUrutan').value,
-                pejabat: document.getElementById('repPejabat').value
+                    username: loggedInUsername,
+                    nama: document.getElementById('repNama').value,
+                    tujuan: document.getElementById('repTujuan').value,
+                    jadwal: document.getElementById('repJadwal').value,
+                    anggaran_biaya: document.getElementById('repAnggaranBiaya').value,
+                    anggaran_periksa: document.getElementById('repAnggaranPeriksa').value,
+                    urutan: document.getElementById('repUrutan').value,
+                    pejabat: document.getElementById('repPejabat').value
             };
 
             try {
@@ -485,7 +494,7 @@
             }
         }
 
-        // Pengaturan Foto Dokumentasi
+        // Pengaturan Tata Letak Foto (1 Foto di Tengah Atas, 2 Foto Portrait Berdampingan Kiri-Kanan, 2 Foto Lanskap Atas-Bawah)
         function handleImageUpload(event) {
             const files = event.target.files;
             const container = document.getElementById('photoContainer');
@@ -497,42 +506,71 @@
                 return;
             }
 
-            Array.from(files).forEach((file, index) => {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const img = new Image();
-                    img.src = e.target.result;
-                    
-                    img.onload = function() {
-                        const isPortrait = img.naturalHeight > img.naturalWidth;
-                        const card = document.createElement('div');
-                        card.className = 'photo-card';
+            if (files.length === 0) {
+                container.innerHTML = '<p style="color: #888; font-style: italic;">Belum ada foto dokumentasi yang diunggah.</p>';
+                return;
+            }
 
-                        if (files.length === 1) {
-                            img.style.maxWidth = isPortrait ? '350px' : '500px';
+            // Cek orientasi foto pertama untuk menentukan layout container jika 2 foto
+            const readerFirst = new FileReader();
+            readerFirst.onload = function(e1) {
+                const imgFirst = new Image();
+                imgFirst.src = e1.target.result;
+                imgFirst.onload = function() {
+                    const isFirstPortrait = imgFirst.naturalHeight > imgFirst.naturalWidth;
+
+                    if (files.length === 1) {
+                        container.style.flexDirection = 'column';
+                        container.style.alignItems = 'center';
+                        appendPhotoCard(files[0], 0, isFirstPortrait ? '320px' : '480px');
+                    } else {
+                        // 2 Foto
+                        if (isFirstPortrait) {
+                            // Portrait: Berdampingan Kiri dan Kanan
+                            container.style.flexDirection = 'row';
+                            container.style.justifyContent = 'center';
+                            container.style.alignItems = 'flex-start';
+                            
+                            Array.from(files).forEach((file, idx) => {
+                                appendPhotoCard(file, idx, '280px');
+                            });
                         } else {
-                            if (isPortrait) {
-                                img.style.maxWidth = '280px';
-                                container.style.flexDirection = 'row';
-                            } else {
-                                img.style.maxWidth = '450px';
-                                container.style.flexDirection = 'column';
-                            }
+                            // Landscape: Bertumpuk Atas dan Bawah di tengah
+                            container.style.flexDirection = 'column';
+                            container.style.alignItems = 'center';
+
+                            Array.from(files).forEach((file, idx) => {
+                                appendPhotoCard(file, idx, '450px');
+                            });
                         }
-
-                        const caption = document.createElement('p');
-                        caption.style.fontSize = "12px";
-                        caption.style.color = "#666";
-                        caption.style.marginTop = "6px";
-                        caption.innerText = `Dokumentasi Foto ${index + 1} (${isPortrait ? 'Portrait' : 'Landscape'})`;
-
-                        card.appendChild(img);
-                        card.appendChild(caption);
-                        container.appendChild(card);
                     }
                 }
-                reader.readAsDataURL(file);
-            });
+            }
+            readerFirst.readAsDataURL(files[0]);
+        }
+
+        function appendPhotoCard(file, index, maxWidth) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const container = document.getElementById('photoContainer');
+                const card = document.createElement('div');
+                card.className = 'photo-card';
+
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                img.style.maxWidth = maxWidth;
+
+                const caption = document.createElement('p');
+                caption.style.fontSize = "12px";
+                caption.style.color = "#666";
+                caption.style.marginTop = "8px";
+                caption.innerText = `Dokumentasi Foto ${index + 1}`;
+
+                card.appendChild(img);
+                card.appendChild(caption);
+                container.appendChild(card);
+            }
+            reader.readAsDataURL(file);
         }
     </script>
 </body>

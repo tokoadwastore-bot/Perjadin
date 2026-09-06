@@ -3,448 +3,136 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>"Aladin" Aplikasi Laporan Perjadin</title>
+    <title>ALADIN - Aplikasi Laporan Perjadin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root {
-            --primary-color: #1a73e8;
-            --primary-dark: #1557b0;
-            --bg-color: #f8f9fa;
-            --card-bg: #ffffff;
-            --text-main: #202124;
-            --text-secondary: #5f6368;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Arial', sans-serif;
-        }
-
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            line-height: 1.5;
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 850px;
-            margin: 0 auto;
-            background: var(--card-bg);
-            padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-            transform: scale(0.92);
-            transform-origin: top center;
-        }
-
-        /* Auth Screen (Login & Register) */
-        .auth-container {
-            max-width: 400px;
-            margin: 60px auto;
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
-
-        h2 {
-            text-align: center;
-            margin-bottom: 25px;
-            color: var(--primary-color);
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 6px;
-            font-weight: bold;
-            color: #000;
-            font-size: 14px;
-        }
-
-        input[type="text"],
-        input[type="password"],
-        input[type="date"],
-        select,
-        textarea {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            font-size: 14px;
-            transition: border-color 0.3s;
-            background-color: #fff;
-        }
-
-        input:focus, select:focus, textarea:focus {
-            outline: none;
-            border-color: var(--primary-color);
-        }
-
-        textarea {
-            resize: vertical;
-            min-height: 90px;
-        }
-
-        button {
-            width: 100%;
-            padding: 12px;
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            border-radius: 6px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-
-        button:hover {
-            background-color: var(--primary-dark);
-        }
-
-        button:disabled {
-            background-color: #ccc;
-            cursor: not-allowed;
-        }
-
-        .toggle-link {
-            text-align: center;
-            margin-top: 15px;
-            font-size: 13px;
-            color: var(--primary-color);
-            cursor: pointer;
-        }
-        .toggle-link:hover {
-            text-decoration: underline;
-        }
-
-        .msg {
-            font-size: 13px;
-            margin-top: 10px;
-            text-align: center;
-        }
-        .error-msg { color: #d93025; font-weight: bold; }
-        .success-msg { color: #137333; font-weight: bold; }
-
-        /* App Section */
-        #app-section {
-            display: none;
-        }
-
-        .header-app {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            border-bottom: 2px solid #ccc;
-            padding-bottom: 10px;
-        }
-
-        .app-brand {
-            font-size: 18px;
-            font-weight: bold;
-            color: var(--primary-color);
-            margin-bottom: 4px;
-        }
-
-        .user-info {
-            font-size: 14px;
-            color: var(--text-secondary);
-        }
-
-        .btn-logout {
-            background: #d93025;
-            width: auto;
-            padding: 6px 14px;
-            font-size: 13px;
-        }
-        .btn-logout:hover {
-            background: #b31412;
-        }
-
-        /* Halaman Laporan 1 & 2 */
-        .report-page {
-            background: white;
-            width: 100%;
-        }
-
-        .report-title {
-            text-align: center;
-            font-weight: bold;
-            font-size: 16px;
-            margin-bottom: 15px;
-            letter-spacing: 0.5px;
-        }
-
-        .report-page .report-table,
-        .report-page .section-header,
-        .report-page .box-section-urutan-container,
-        .report-page .box-section-pejabat-container {
-            width: 100%;
-            box-sizing: border-box;
-        }
-
-        .report-table {
-            border-collapse: collapse;
-            margin-bottom: 0px;
-        }
-
-        .report-table th, .report-table td {
-            border: 1px solid #000;
-            padding: 8px 10px;
-            font-size: 13px;
-            vertical-align: top;
-        }
-
-        .report-table td:nth-child(4) {
-            height: 55px; 
-            padding-top: 12px;
-            padding-bottom: 12px;
-        }
-
-        .section-header {
-            border: 1px solid #000;
-            border-bottom: none;
-            background: #ffffff;
-            text-align: center;
-            font-weight: bold;
-            font-size: 13px;
-            padding: 6px;
-            margin-top: 15px;
-        }
-
-        .box-section-urutan-container {
-            border: 1px solid #000;
-            margin-bottom: 0px;
-        }
-
-        .box-section-urutan-main {
-            min-height: 440px;
-            padding: 10px;
-            text-align: justify;
-            font-size: 13px;
-        }
-
-        .box-section-urutan-sub {
-            border-top: 1px solid #000;
-            min-height: 25px;
-            padding: 4px 10px;
-        }
-
-        .box-section-pejabat-container {
-            border: 1px solid #000;
-            margin-bottom: 0px;
-        }
-
-        .box-section-pejabat-main {
-            min-height: 90px;
-            padding: 10px;
-            font-size: 13px;
-        }
-
-        .page-break {
-            page-break-before: always;
-            margin-top: 40px;
-        }
-
-        .doc-container {
-            border: 1px solid #000;
-            height: 870px;
-            max-height: 870px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            padding: 0; 
-            overflow: hidden;
-            background-color: #fdfdfd;
-            width: 100%;
-        }
-
-        .doc-box-item {
-            flex: 1;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            border-bottom: 1px solid #000;
-            width: 100%;
-            overflow: hidden;
-        }
-
-        .doc-box-item:last-child {
-            border-bottom: none;
-        }
-
-        .photo-card {
-            text-align: center;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-        }
-
-        .photo-card img {
-            display: block;
-            width: 100%;
-            height: 100%;
-            max-height: 285px;
-            object-fit: cover; 
-            object-position: center;
-            background-color: transparent;
-            margin: 0;
-        }
-
-        .photo-caption {
-            position: absolute;
-            bottom: 4px;
-            left: 8px;
-            background: rgba(255, 255, 255, 0.9);
-            padding: 2px 8px;
-            font-size: 11px;
-            color: #333;
-            border-radius: 3px;
-            font-weight: bold;
-            border: 1px solid #ccc;
-        }
-
-        .btn-delete-photo {
-            position: absolute;
-            top: 8px;
-            right: 8px;
-            background: rgba(217, 48, 37, 0.9);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 28px;
-            height: 28px;
-            font-size: 14px;
-            font-weight: bold;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-            z-index: 10;
-        }
-        .btn-delete-photo:hover {
-            background: #b31412;
-        }
-
-        .action-buttons {
-            display: flex;
-            gap: 15px;
-            margin-top: 30px;
-        }
-
-        .btn-print {
-            background-color: #34a853;
-        }
-        .btn-print:hover {
-            background-color: #2e8b57;
-        }
-
-        .loading-spinner {
-            display: none;
-            text-align: center;
-            font-style: italic;
-            color: #666;
-            margin-top: 10px;
-        }
-
-        @media (max-width: 768px) {
-            body { padding: 5px; }
-            .container { padding: 10px; max-width: 100%; transform: scale(0.92); transform-origin: top center; margin-top: 0; }
-            .report-page { margin-bottom: 30px; padding-bottom: 20px; border-bottom: 2px dashed #ccc; }
-            .page-break { margin-top: 20px; border-top: none; }
-        }
-
+        body { background-color: #f8f9fa; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .card { border: none; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .btn-primary { background-color: #0d6efd; border: none; border-radius: 8px; padding: 10px; }
+        .form-control, .form-select { border-radius: 8px; padding: 10px; border: 1px solid #ced4da; }
+        .form-control:focus, .form-select:focus { box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15); }
+        
+        /* Print Styling - Exact 2 Pages layout */
         @media print {
-            body { background: white; padding: 0; }
-            .container { box-shadow: none; padding: 0; max-width: 100%; transform: scale(0.92); transform-origin: top center; }
+            body { background: white; -webkit-print-color-adjust: exact; }
             .no-print { display: none !important; }
-            input, select, textarea { border: none; background: transparent; padding: 0; resize: none; font-size: 13px; -webkit-appearance: none; }
-            .page-break { page-break-before: always; display: block; }
+            .print-container { display: block !important; width: 100%; }
+            .page-break { page-break-after: always; break-after: page; height: 100vh; display: flex; flex-direction: column; justify-content: space-between; }
+            @page { size: A4; margin: 15mm; }
         }
+        .print-container { display: none; background: white; color: black; font-size: 12pt; }
+        
+        /* Table styling for print preview matching images */
+        .print-table { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
+        .print-table th, .print-table td { border: 1px solid #000; padding: 6px 8px; vertical-align: top; }
+        .box-section { border: 1px solid #000; margin-bottom: 15px; }
+        .box-header { background-color: #e9ecef !important; border-bottom: 1px solid #000; padding: 6px 10px; font-weight: bold; text-align: center; font-size: 11pt; }
+        .box-body { padding: 10px; min-height: 250px; }
+        .photo-box { border: 1px solid #000; height: 280px; display: flex; align-items: center; justify-content: center; overflow: hidden; margin-bottom: 10px; background: #fff; }
+        .photo-box img { width: 100%; height: 100%; object-fit: contain; }
     </style>
 </head>
 <body>
 
-    <!-- HALAMAN LOGIN -->
-    <div id="login-section" class="auth-container">
-        <h2>✨ "Aladin"</h2>
-        <p style="text-align: center; font-size: 14px; color: #5f6368; margin-top: -15px; margin-bottom: 25px;">Aplikasi Laporan Perjadin</p>
-        <form id="loginForm" onsubmit="handleLogin(event)">
-            <div class="form-group">
-                <label>Username</label>
-                <input type="text" id="loginUser" required placeholder="Masukkan username">
-            </div>
-            <div class="form-group">
-                <label>Password</label>
-                <input type="password" id="loginPass" required placeholder="Masukkan password">
-            </div>
-            <button type="submit" id="btnLogin">Masuk</button>
-            <div id="loginMsg" class="msg"></div>
-        </form>
-        <div class="toggle-link" onclick="switchAuthMode('register')">Belum punya akun? Daftar di sini</div>
+    <!-- LOADING SPINNER -->
+    <div id="loadingOverlay" class="position-fixed top-0 start-0 w-100 h-100 d-none justify-content-center align-items-center bg-white bg-opacity-75" style="z-index: 9999;">
+        <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+            <span class="visually-hidden">Loading...</span>
+        </div>
     </div>
 
-    <!-- HALAMAN REGISTER -->
-    <div id="register-section" class="auth-container" style="display: none;">
-        <h2>📝 Daftar Akun Baru</h2>
-        <p style="text-align: center; font-size: 14px; color: #5f6368; margin-top: -15px; margin-bottom: 25px;">"Aladin" - Aplikasi Laporan Perjadin</p>
-        <form id="registerForm" onsubmit="handleRegister(event)">
-            <div class="form-group">
-                <label>Nama Lengkap</label>
-                <input type="text" id="regNama" required placeholder="Nama lengkap petugas">
-            </div>
-            <div class="form-group">
-                <label>Username</label>
-                <input type="text" id="regUser" required placeholder="Buat username">
-            </div>
-            <div class="form-group">
-                <label>Password (Angka)</label>
-                <input type="text" inputmode="numeric" pattern="[0-9]*" id="regPass" required placeholder="Contoh: 123456">
-            </div>
-            <button type="submit" id="btnReg">Daftar</button>
-            <div id="regMsg" class="msg"></div>
-        </form>
-        <div class="toggle-link" onclick="switchAuthMode('login')">Sudah punya akun? Login di sini</div>
-    </div>
-
-    <!-- HALAMAN UTAMA FORMULIR & LAPORAN -->
-    <div id="app-section" class="container">
-        <div class="header-app no-print">
-            <div>
-                <div class="app-brand">✨ "Aladin"</div>
-                <div class="user-info">Aplikasi Laporan Perjadin | Petugas: <b id="displayUser">Admin</b></div>
-            </div>
-            <button class="btn-logout" onclick="handleLogout()">Logout</button>
+    <!-- AUTH SECTION -->
+    <div id="authSection" class="container mt-5 no-print" style="max-width: 450px;">
+        <div class="text-center mb-4">
+            <h2 class="fw-bold text-primary"><i class="fas fa-file-invoice"></i> ALADIN</h2>
+            <p class="text-muted">Aplikasi Laporan Perjadin - BPS Kabupaten Brebes</p>
         </div>
 
-        <form id="reportForm" onsubmit="saveReportToCloud(event)">
-            
-            <div class="no-print" style="background: #f1f3f4; padding: 20px; border-radius: 8px; margin-bottom: 30px;">
-                <h3 style="margin-bottom: 15px; color: #1a73e8;">Formulir Pengisian Laporan</h3>
-                
-                <div class="form-group">
-                    <label>Nama:</label>
-                    <input type="text" id="inputNama" required placeholder="Masukkan Nama Petugas">
+        <!-- Login Form -->
+        <div id="loginCard" class="card p-4">
+            <h4 class="mb-3 text-center">Login Petugas</h4>
+            <div class="mb-3">
+                <label class="form-label">Username</label>
+                <input type="text" id="loginUsername" class="form-control" placeholder="Masukkan username">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Password</label>
+                <input type="password" id="loginPassword" class="form-control" placeholder="Masukkan password">
+            </div>
+            <button onclick="handleLogin()" class="btn btn-primary w-100 mb-3">Login</button>
+            <div class="text-center">
+                <small class="text-muted">Belum punya akun? <a href="#" onclick="toggleAuth(true)">Registrasi di sini</a></small>
+            </div>
+        </div>
+
+        <!-- Register Form -->
+        <div id="registerCard" class="card p-4 d-none">
+            <h4 class="mb-3 text-center">Registrasi Petugas</h4>
+            <div class="mb-3">
+                <label class="form-label">Nama Lengkap & Gelar</label>
+                <input type="text" id="regNama" class="form-control" placeholder="Contoh: Budi Santoso, S.ST">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Username</label>
+                <input type="text" id="regUsername" class="form-control" placeholder="Buat username">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Password</label>
+                <input type="password" id="regPassword" class="form-control" placeholder="Buat password">
+            </div>
+            <button onclick="handleRegister()" class="btn btn-success w-100 mb-3">Daftar</button>
+            <div class="text-center">
+                <small class="text-muted">Sudah punya akun? <a href="#" onclick="toggleAuth(false)">Login di sini</a></small>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN APP SECTION -->
+    <div id="appSection" class="container py-4 d-none no-print" style="max-width: 800px;">
+        <div class="d-flex justify-content-between align-items-center mb-4 bg-white p-3 rounded shadow-sm">
+            <div>
+                <h5 class="mb-0 text-primary fw-bold"><i class="fas fa-file-alt"></i> Buat Laporan Perjadin</h5>
+                <small class="text-muted">Login sebagai: <span id="userDisplayName" class="fw-semibold"></span></small>
+            </div>
+            <button onclick="handleLogout()" class="btn btn-outline-danger btn-sm"><i class="fas fa-sign-out-alt"></i> Logout</button>
+        </div>
+
+        <div class="card p-4 mb-4">
+            <form id="perjadinForm" onsubmit="event.preventDefault(); preparePrintPreview();">
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Nama Petugas</label>
+                    <input type="text" id="f_nama" class="form-control" required>
                 </div>
 
-                <div class="form-group">
-                    <label>Jenis Survei:</label>
-                    <select id="inputJenisSurvei" required onchange="updateTujuanGabungan()">
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Kecamatan Tujuan</label>
+                    <select id="f_kecamatan" class="form-select" required>
+                        <option value="" disabled selected>-- Pilih Kecamatan --</option>
+                        <option value="Margasari">Margasari</option>
+                        <option value="Bumijawa">Bumijawa</option>
+                        <option value="Bojong">Bojong</option>
+                        <option value="Balapulang">Balapulang</option>
+                        <option value="Pagerbarang">Pagerbarang</option>
+                        <option value="Lebaksiu">Lebaksiu</option>
+                        <option value="Jatinegara">Jatinegara</option>
+                        <option value="Kedungbanteng">Kedungbanteng</option>
+                        <option value="Pangkah">Pangkah</option>
+                        <option value="Slawi">Slawi</option>
+                        <option value="Dukuhwaru">Dukuhwaru</option>
+                        <option value="Adiwerna">Adiwerna</option>
+                        <option value="Dukuhturi">Dukuhturi</option>
+                        <option value="Talang">Talang</option>
+                        <option value="Tarub">Tarub</option>
+                        <option value="Kramat">Kramat</option>
+                        <option value="Suradadi">Suradadi</option>
+                        <option value="Warureja">Warureja</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Jenis Survei</label>
+                    <select id="f_jenisSurvei" class="form-select" required>
                         <option value="" disabled selected>-- Pilih Jenis Survei --</option>
                         <option value="KSA Padi">KSA Padi</option>
                         <option value="KSA Jagung">KSA Jagung</option>
@@ -464,401 +152,318 @@
                     </select>
                 </div>
 
-                <div class="form-group">
-                    <label>Tujuan:</label>
-                    <select id="inputTujuanPilih" required onchange="updateTujuanGabungan()">
-                        <option value="" disabled selected>-- Pilih Tujuan --</option>
-                        <option value="Pengumpulan data">Pengumpulan data</option>
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Tujuan Survei</label>
+                    <select id="f_tujuanSurvei" class="form-select" required>
+                        <option value="" disabled selected>-- Pilih Tujuan Survei --</option>
+                        <option value="Pengumpulan Data Lapangan">Pengumpulan Data Lapangan</option>
                         <option value="Pengawasan/ Pemeriksaan Lapangan">Pengawasan/ Pemeriksaan Lapangan</option>
-                        <option value="Supervisi">Supervisi</option>
+                        <option value="Supervisi Lapangan">Supervisi Lapangan</option>
                     </select>
                 </div>
 
-                <input type="hidden" id="inputTujuan">
-
-                <div class="form-group">
-                    <label>Jadwal:</label>
-                    <input type="date" id="inputJadwal" required>
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Jadwal (Tanggal)</label>
+                    <input type="date" id="f_jadwal" class="form-control" required>
                 </div>
 
-                <div class="form-group">
-                    <label>Anggaran/Kegiatan yang membiayai:</label>
-                    <input type="text" id="inputAnggaranBiaya" value="054">
-                </div>
-
-                <div class="form-group">
-                    <label>Anggaran/Kegiatan yang diperiksa:</label>
-                    <input type="text" id="inputAnggaranPeriksa" value="054">
-                </div>
-
-                <div class="form-group">
-                    <label>Urutan Kegiatan:</label>
-                    <textarea id="inputUrutan" required placeholder="Uraikan urutan kegiatan dan ringkasan hasil..."></textarea>
-                </div>
-
-                <div class="form-group">
-                    <label>Pejabat dan Tempat yang Dikunjungi:</label>
-                    <textarea id="inputPejabat" required placeholder="Sebutkan nama pejabat dan tempat yang dikunjungi..."></textarea>
-                </div>
-
-                <div class="form-group">
-                    <label>Dokumentasi Foto (Maksimal 3 foto):</label>
-                    <input type="file" id="uploadFoto" accept="image/*" multiple onchange="handleImageUpload(event)">
-                </div>
-            </div>
-
-            <!-- PREVIEW LAPORAN -->
-            <div class="report-page">
-                <div class="report-title">LAPORAN KEGIATAN</div>
-
-                <table class="report-table">
-                    <tr>
-                        <th colspan="4" style="background: #ffffff; text-align: center;">A. UMUM</th>
-                    </tr>
-                    <tr>
-                        <td style="width: 15%;">1. Nama</td>
-                        <td style="width: 35%;"><span id="previewNama"></span></td>
-                        <td style="width: 25%;">4. Anggaran/Kegiatan yang membiayai</td>
-                        <td style="width: 25%;"><span id="previewAnggaranBiaya">054</span></td>
-                    </tr>
-                    <tr>
-                        <td>2. Tujuan</td>
-                        <td><span id="previewTujuan"></span></td>
-                        <td>5. Anggaran/Kegiatan yang diperiksa</td>
-                        <td>054</td>
-                    </tr>
-                    <tr>
-                        <td>3. Jadwal</td>
-                        <td><span id="previewJadwal"></span></td>
-                        <td>6. Tanda tangan Petugas</td>
-                        <td></td>
-                    </tr>
-                </table>
-
-                <div class="section-header">B. URUTAN KEGIATAN (RINGKASAN HASIL)</div>
-                <div class="box-section-urutan-container">
-                    <div class="box-section-urutan-main">
-                        <span id="previewUrutan" style="white-space: pre-wrap;"></span>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-semibold">Anggaran yang Membiayai</label>
+                        <input type="text" id="f_anggaranMembiayai" class="form-control" value="054" required>
                     </div>
-                    <div class="box-section-urutan-sub"></div>
-                </div>
-
-                <div class="section-header">C. PEJABAT DAN TEMPAT YANG DIKUNJUNGI</div>
-                <div class="box-section-pejabat-container">
-                    <div class="box-section-pejabat-main">
-                        <span id="previewPejabat" style="white-space: pre-wrap;"></span>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-semibold">Anggaran yang Diperiksa</label>
+                        <input type="text" id="f_anggaranDiperiksa" class="form-control" value="054" required>
                     </div>
                 </div>
-            </div>
 
-            <div class="page-break"></div>
-            <div class="report-page">
-                <div class="section-header" style="margin-bottom: 0;">D. DOKUMENTASI</div>
-                <div class="doc-container" id="docBoxContainer"></div>
-            </div>
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Tanda Tangan Petugas (Nama/Inisial)</label>
+                    <input type="text" id="f_ttd" class="form-control" placeholder="Tuliskan nama terang/paraf" required>
+                </div>
 
-            <div class="action-buttons no-print">
-                <button type="submit" class="btn-print">💾 Simpan ke Google Sheets & Cetak PDF</button>
-            </div>
-            <div id="saveStatus" class="loading-spinner">Menyimpan laporan ke Google Spreadsheet...</div>
-        </form>
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Urutan Kegiatan (Ringkasan Hasil)</label>
+                    <textarea id="f_urutanKegiatan" class="form-control" rows="5" placeholder="Tuliskan urutan kegiatan secara rinci..." required></textarea>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Pejabat dan Tempat yang Dikunjungi</label>
+                    <textarea id="f_pejabatTempat" class="form-control" rows="4" placeholder="Tuliskan pejabat atau lokasi yang dikunjungi..." required></textarea>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Dokumentasi Foto (Maksimal 3 Foto)</label>
+                    <input type="file" id="f_fotoInput" class="form-control mb-2" accept="image/*" onchange="addPhoto(this)">
+                    <small class="text-muted">Foto akan diakumulasikan ke dalam laporan (maks 3 foto).</small>
+                    
+                    <div id="photoPreviewContainer" class="row mt-2 g-2"></div>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100 py-2 mt-3"><i class="fas fa-print"></i> Preview & Simpan Laporan</button>
+            </form>
+        </div>
     </div>
 
+    <!-- PRINT PREVIEW CONTAINER (EXACT 2 PAGES MATCHING IMAGES) -->
+    <div id="printArea" class="print-container">
+        
+        <!-- PAGE 1 -->
+        <div class="page-break">
+            <div>
+                <div class="text-center fw-bold mb-4" style="font-size: 14pt;">LAPORAN KEGIATAN</div>
+                
+                <div class="box-section">
+                    <div class="box-header">A. UMUM</div>
+                    <table class="print-table mb-0" style="border: none;">
+                        <tr>
+                            <td style="width: 15%;">1. Nama</td>
+                            <td id="p_nama" style="width: 35%;"></td>
+                            <td style="width: 25%;">4. Anggaran/Kegiatan yang membiayai</td>
+                            <td id="p_anggaranMembiayai" style="width: 25%;"></td>
+                        </tr>
+                        <tr>
+                            <td>2. Tujuan</td>
+                            <td id="p_tujuan"></td>
+                            <td>5. Anggaran/Kegiatan yang diperiksa</td>
+                            <td id="p_anggaranDiperiksa"></td>
+                        </tr>
+                        <tr>
+                            <td>3. Jadwal</td>
+                            <td id="p_jadwal"></td>
+                            <td>6. Tanda tangan Petugas</td>
+                            <td id="p_ttd"></td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="box-section">
+                    <div class="box-header">B. URUTAN KEGIATAN (RINGKASAN HASIL)</div>
+                    <div class="box-body" id="p_urutanKegiatan" style="white-space: pre-line;"></div>
+                </div>
+
+                <div class="box-section mb-0">
+                    <div class="box-header">C. PEJABAT DAN TEMPAT YANG DIKUNJUNGI</div>
+                    <div class="box-body" id="p_pejabatTempat" style="min-height: 120px; white-space: pre-line;"></div>
+                </div>
+            </div>
+            
+            <div class="text-end text-muted" style="font-size: 10pt;">Halaman 1 dari 2</div>
+        </div>
+
+        <!-- PAGE 2 (NO CENTER LINE) -->
+        <div style="height: 100vh; display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+                <div class="box-section">
+                    <div class="box-header">D. DOKUMENTASI</div>
+                    <div style="padding: 10px;">
+                        <div class="photo-box"><span id="p_no_foto1" class="text-muted">Belum ada foto 1</span><img id="p_img1" class="d-none"></div>
+                        <div class="photo-box"><span id="p_no_foto2" class="text-muted">Belum ada foto 2</span><img id="p_img2" class="d-none"></div>
+                        <div class="photo-box mb-0"><span id="p_no_foto3" class="text-muted">Belum ada foto 3</span><img id="p_img3" class="d-none"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="d-flex justify-content-between align-items-center no-print mt-3">
+                <button onclick="backToForm()" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Kembali Edit</button>
+                <button onclick="saveAndPrint()" class="btn btn-success"><i class="fas fa-save"></i> Simpan ke Spreadsheet & Cetak / PDF</button>
+            </div>
+            
+            <div class="text-end text-muted" style="font-size: 10pt;">Halaman 2 dari 2</div>
+        </div>
+
+    </div>
+
+    <!-- JS SCRIPTS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwQ-bmfkstTg4Q1_qB6ZJn66hs77c3zRAyt9gQaT_xsLJEYL5U8imkMsHmzO5VUY3II/exec";
-        let loggedInUsername = "";
-        let uploadedPhotos = []; 
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz6-H7apnx_4-JBSeXFDn0uhz68pPMuYWUC3k6UYpYUQyMe9fjawGx0utmdrWgPniQ6/exec";
+        let currentUser = null;
+        let uploadedPhotos = []; // Accumulative photos max 3
 
-        function formatTanggalIndonesia(dateString) {
-            if (!dateString) return "";
-            const date = new Date(dateString);
-            if (isNaN(date)) return dateString;
-            const options = { day: 'numeric', month: 'long', year: 'numeric' };
-            return date.toLocaleDateString('id-ID', options);
+        function showLoading(show) {
+            document.getElementById('loadingOverlay').classList.toggle('d-none', !show);
+            document.getElementById('loadingOverlay').classList.toggle('d-flex', show);
         }
 
-        function updateTujuanGabungan() {
-            const jenisSurvei = document.getElementById('inputJenisSurvei').value;
-            const tujuanPilih = document.getElementById('inputTujuanPilih').value;
-            
-            let gabungan = "";
-            if (tujuanPilih && jenisSurvei) {
-                gabungan = `${tujuanPilih} ${jenisSurvei}`;
-            } else if (tujuanPilih) {
-                gabungan = tujuanPilih;
-            } else if (jenisSurvei) {
-                gabungan = jenisSurvei;
-            }
-
-            document.getElementById('inputTujuan').value = gabungan;
-            document.getElementById('previewTujuan').innerText = gabungan;
+        function toggleAuth(isRegister) {
+            document.getElementById('loginCard').classList.toggle('d-none', isRegister);
+            document.getElementById('registerCard').classList.toggle('d-none', !isRegister);
         }
 
-        const fields = ['Nama', 'AnggaranBiaya', 'AnggaranPeriksa', 'Urutan', 'Pejabat'];
-        fields.forEach(field => {
-            const inputEl = document.getElementById('input' + field);
-            const previewEl = document.getElementById('preview' + field);
-            if(inputEl && previewEl) {
-                inputEl.addEventListener('input', () => {
-                    previewEl.innerText = inputEl.value;
-                });
-            }
-        });
+        function handleRegister() {
+            let namaLengkap = document.getElementById('regNama').value.trim();
+            let username = document.getElementById('regUsername').value.trim();
+            let password = document.getElementById('regPassword').value.trim();
 
-        const inputJadwalEl = document.getElementById('inputJadwal');
-        const previewJadwalEl = document.getElementById('previewJadwal');
-        if(inputJadwalEl && previewJadwalEl) {
-            inputJadwalEl.addEventListener('input', () => {
-                previewJadwalEl.innerText = formatTanggalIndonesia(inputJadwalEl.value);
-            });
-        }
-
-        function switchAuthMode(mode) {
-            document.getElementById('loginMsg').innerText = "";
-            document.getElementById('regMsg').innerText = "";
-            
-            if (mode === 'register') {
-                document.getElementById('login-section').style.display = 'none';
-                document.getElementById('register-section').style.display = 'block';
-            } else {
-                document.getElementById('register-section').style.display = 'none';
-                document.getElementById('login-section').style.display = 'block';
-            }
-        }
-
-        async function handleRegister(event) {
-            event.preventDefault();
-            const nama_lengkap = document.getElementById('regNama').value.trim();
-            const username = document.getElementById('regUser').value.trim();
-            let password = document.getElementById('regPass').value.trim().replace(/\D/g, '');
-            const msgDiv = document.getElementById('regMsg');
-            const btn = document.getElementById('btnReg');
-
-            if (!username || !password || !nama_lengkap) {
-                msgDiv.innerText = "Semua kolom wajib diisi!";
-                msgDiv.className = "msg error-msg";
+            if (!namaLengkap || !username || !password) {
+                alert("Semua kolom registrasi harus diisi!");
                 return;
             }
 
-            msgDiv.innerText = "Menghubungkan ke server...";
-            msgDiv.className = "msg";
-            btn.disabled = true;
-
-            try {
-                const response = await fetch(SCRIPT_URL, {
-                    method: "POST",
-                    body: JSON.stringify({ action: "register", nama_lengkap, username, password })
-                });
-                
-                const textResult = await response.text();
-                let result;
-                try {
-                    result = JSON.parse(textResult);
-                } catch (err) {
-                    throw new Error("Format respons server tidak valid.");
-                }
-
-                if (result.status === "success") {
-                    msgDiv.innerText = result.message || "Pendaftaran berhasil!";
-                    msgDiv.className = "msg success-msg";
-                    setTimeout(() => {
-                        switchAuthMode('login');
-                        document.getElementById('registerForm').reset();
-                    }, 1500);
-                } else {
-                    msgDiv.innerText = result.message || "Pendaftaran gagal.";
-                    msgDiv.className = "msg error-msg";
-                }
-            } catch (error) {
-                msgDiv.innerText = "Gagal terhubung. Pastikan Web App Google Script sudah di-deploy dengan akses 'Anyone'.";
-                msgDiv.className = "msg error-msg";
-            }
-            btn.disabled = false;
+            showLoading(true);
+            google.script.run
+                .withSuccessHandler(res => {
+                    showLoading(false);
+                    alert(res.message);
+                    if (res.success) toggleAuth(false);
+                })
+                .registerUser({ namaLengkap, username, password });
         }
 
-        async function handleLogin(event) {
-            event.preventDefault();
-            const username = document.getElementById('loginUser').value.trim();
-            const password = document.getElementById('loginPass').value.trim();
-            const msgDiv = document.getElementById('loginMsg');
-            const btn = document.getElementById('btnLogin');
+        function handleLogin() {
+            let username = document.getElementById('loginUsername').value.trim();
+            let password = document.getElementById('loginPassword').value.trim();
 
             if (!username || !password) {
-                msgDiv.innerText = "Username dan password wajib diisi!";
-                msgDiv.className = "msg error-msg";
+                alert("Masukkan username dan password!");
                 return;
             }
 
-            msgDiv.innerText = "Memeriksa kredensial...";
-            msgDiv.className = "msg";
-            btn.disabled = true;
-
-            try {
-                const response = await fetch(SCRIPT_URL, {
-                    method: "POST",
-                    body: JSON.stringify({ action: "login", username, password })
-                });
-                
-                const textResult = await response.text();
-                let result;
-                try {
-                    result = JSON.parse(textResult);
-                } catch (err) {
-                    throw new Error("Format respons server tidak valid.");
-                }
-
-                if (result.status === "success") {
-                    loggedInUsername = username;
-                    document.getElementById('login-section').style.display = 'none';
-                    document.getElementById('app-section').style.display = 'block';
-                    document.getElementById('displayUser').innerText = result.nama_lengkap || username;
-                    
-                    document.getElementById('inputNama').value = result.nama_lengkap || username;
-                    document.getElementById('previewNama').innerText = result.nama_lengkap || username;
-                    
-                    const today = new Date().toISOString().split('T')[0];
-                    document.getElementById('inputJadwal').value = today;
-                    document.getElementById('previewJadwal').innerText = formatTanggalIndonesia(today);
-                } else {
-                    msgDiv.innerText = result.message || "Login gagal.";
-                    msgDiv.className = "msg error-msg";
-                }
-            } catch (error) {
-                msgDiv.innerText = "Gagal terhubung. Pastikan Web App Google Script sudah di-deploy dengan akses 'Anyone'.";
-                msgDiv.className = "msg error-msg";
-            }
-            btn.disabled = false;
+            showLoading(true);
+            google.script.run
+                .withSuccessHandler(res => {
+                    showLoading(false);
+                    if (res.success) {
+                        currentUser = username;
+                        document.getElementById('userDisplayName').innerText = res.namaLengkap;
+                        document.getElementById('f_nama').value = res.namaLengkap;
+                        document.getElementById('authSection').classList.add('d-none');
+                        document.getElementById('appSection').classList.remove('d-none');
+                    } else {
+                        alert(res.message);
+                    }
+                })
+                .loginUser({ username, password });
         }
 
         function handleLogout() {
-            loggedInUsername = "";
-            document.getElementById('app-section').style.display = 'none';
-            document.getElementById('login-section').style.display = 'block';
-            document.getElementById('loginForm').reset();
-            document.getElementById('registerForm').reset();
+            currentUser = null;
+            document.getElementById('authSection').classList.remove('d-none');
+            document.getElementById('appSection').classList.add('d-none');
+            document.getElementById('perjadinForm').reset();
+            uploadedPhotos = [];
+            renderPhotoPreviews();
         }
 
-        async function saveReportToCloud(event) {
-            event.preventDefault();
-            const statusDiv = document.getElementById('saveStatus');
-            statusDiv.style.display = "block";
-            statusDiv.innerText = "Menyimpan data laporan ke Google Spreadsheet...";
-
-            const reportData = {
-                action: "save_report",
-                username: loggedInUsername,
-                nama: document.getElementById('inputNama').value,
-                tujuan: document.getElementById('inputTujuan').value,
-                jadwal: document.getElementById('inputJadwal').value,
-                anggaran_biaya: document.getElementById('inputAnggaranBiaya').value,
-                anggaran_periksa: document.getElementById('inputAnggaranPeriksa').value,
-                urutan: document.getElementById('inputUrutan').value,
-                pejabat: document.getElementById('inputPejabat').value
-            };
-
-            try {
-                const response = await fetch(SCRIPT_URL, {
-                    method: "POST",
-                    body: JSON.stringify(reportData)
-                });
-                const result = await response.json();
-
-                if (result.status === "success") {
-                    statusDiv.innerText = "✅ Berhasil disimpan ke Spreadsheet! Membuka dialog cetak PDF...";
-                    statusDiv.style.color = "#137333";
-                    setTimeout(() => {
-                        statusDiv.style.display = "none";
-                        window.print();
-                    }, 1000);
-                } else {
-                    statusDiv.innerText = "Gagal menyimpan: " + result.message;
-                    statusDiv.style.color = "#d93025";
+        // Photo Accumulator function (Max 3)
+        function addPhoto(input) {
+            if (input.files && input.files[0]) {
+                if (uploadedPhotos.length >= 3) {
+                    alert("Maksimal 3 foto dokumentasi!");
+                    input.value = "";
+                    return;
                 }
-            } catch (error) {
-                statusDiv.innerText = "Gagal terhubung ke Google Spreadsheet.";
-                statusDiv.style.color = "#d93025";
-            }
-        }
 
-        function handleImageUpload(event) {
-            const files = event.target.files;
-            if (!files || files.length === 0) return;
-
-            const remainingSlots = 3 - uploadedPhotos.length;
-            if (remainingSlots <= 0) {
-                alert("Maksimal sudah 3 foto dokumentasi tercapai.");
-                document.getElementById('uploadFoto').value = '';
-                return;
-            }
-
-            const filesToProcess = Array.from(files).slice(0, remainingSlots);
-            let processedCount = 0;
-            filesToProcess.forEach((file) => {
-                const reader = new FileReader();
+                let reader = new FileReader();
                 reader.onload = function(e) {
                     uploadedPhotos.push(e.target.result);
-                    processedCount++;
-                    if (processedCount === filesToProcess.length) {
-                        renderPhotos();
-                        document.getElementById('uploadFoto').value = ''; 
-                    }
+                    renderPhotoPreviews();
+                    input.value = ""; // Reset input file
                 }
-                reader.readAsDataURL(file);
-            });
+                reader.readAsDataURL(input.files[0]);
+            }
         }
 
         function removePhoto(index) {
             uploadedPhotos.splice(index, 1);
-            renderPhotos();
+            renderPhotoPreviews();
         }
 
-        function renderPhotos() {
-            const container = document.getElementById('docBoxContainer');
-            container.innerHTML = '';
-
-            uploadedPhotos.forEach((src, index) => {
-                const itemDiv = document.createElement('div');
-                itemDiv.className = 'doc-box-item';
-
-                const card = document.createElement('div');
-                card.className = 'photo-card';
-
-                const img = document.createElement('img');
-                img.src = src;
-
-                const caption = document.createElement('div');
-                caption.className = 'photo-caption';
-                caption.innerText = `Dokumentasi Foto ${index + 1}`;
-
-                const deleteBtn = document.createElement('button');
-                deleteBtn.className = 'btn-delete-photo no-print';
-                deleteBtn.innerHTML = '&times;';
-                deleteBtn.onclick = () => removePhoto(index);
-
-                card.appendChild(img);
-                card.appendChild(caption);
-                card.appendChild(deleteBtn);
-                itemDiv.appendChild(card);
-                container.appendChild(itemDiv);
+        function renderPhotoPreviews() {
+            let container = document.getElementById('photoPreviewContainer');
+            container.innerHTML = "";
+            uploadedPhotos.forEach((photo, index) => {
+                let col = document.createElement('div');
+                col.className = "col-4 position-relative";
+                col.innerHTML = `
+                    <div class="border rounded p-1 text-center bg-white" style="height: 100px;">
+                        <img src="${photo}" class="w-100 h-100 object-fit-cover rounded">
+                        <button type="button" class="position-absolute top-0 end-0 btn btn-danger btn-sm rounded-circle p-0" style="width: 24px; height: 24px; line-height: 22px;" onclick="removePhoto(${index})">&times;</button>
+                    </div>
+                `;
+                container.appendChild(col);
             });
-
-            for (let i = uploadedPhotos.length; i < 3; i++) {
-                const emptyDiv = document.createElement('div');
-                emptyDiv.className = 'doc-box-item';
-                emptyDiv.style.display = 'flex';
-                emptyDiv.style.alignItems = 'center';
-                emptyDiv.style.justifyContent = 'center';
-                emptyDiv.style.color = '#aaa';
-                emptyDiv.style.fontSize = '12px';
-                emptyDiv.style.background = '#fafafa';
-                emptyDiv.innerHTML = `<span>[ Kosong - Slot Dokumentasi Foto ${i + 1} ]</span>`;
-                container.appendChild(emptyDiv);
-            }
         }
 
-        window.onload = function() {
-            renderPhotos();
-        };
+        function preparePrintPreview() {
+            let nama = document.getElementById('f_nama').value;
+            let kecamatan = document.getElementById('f_kecamatan').value;
+            let jenisSurvei = document.getElementById('f_jenisSurvei').value;
+            let tujuanSurvei = document.getElementById('f_tujuanSurvei').value;
+            let jadwal = document.getElementById('f_jadwal').value;
+            let anggaranMembiayai = document.getElementById('f_anggaranMembiayai').value;
+            let anggaranDiperiksa = document.getElementById('f_anggaranDiperiksa').value;
+            let ttd = document.getElementById('f_ttd').value;
+            let urutanKegiatan = document.getElementById('f_urutanKegiatan').value;
+            let pejabatTempat = document.getElementById('f_pejabatTempat').value;
+
+            // Gabungan tujuan survei dan jenis survei sesuai instruksi
+            let combinedTujuan = `${tujuanSurvei} - ${jenisSurvei} di Kecamatan ${kecamatan}`;
+
+            // Fill Print Template
+            document.getElementById('p_nama').innerText = nama;
+            document.getElementById('p_tujuan').innerText = combinedTujuan;
+            document.getElementById('p_jadwal').innerText = jadwal;
+            document.getElementById('p_anggaranMembiayai').innerText = anggaranMembiayai;
+            document.getElementById('p_anggaranDiperiksa').innerText = anggaranDiperiksa;
+            document.getElementById('p_ttd').innerText = ttd;
+            document.getElementById('p_urutanKegiatan').innerText = urutanKegiatan;
+            document.getElementById('p_pejabatTempat').innerText = pejabatTempat;
+
+            // Render Photos in Print Area
+            for (let i = 1; i <= 3; i++) {
+                let imgElem = document.getElementById(`p_img${i}`);
+                let spanElem = document.getElementById(`p_no_foto${i}`);
+                if (uploadedPhotos[i - 1]) {
+                    imgElem.src = uploadedPhotos[i - 1];
+                    imgElem.classList.remove('d-none');
+                    spanElem.classList.add('d-none');
+                } else {
+                    imgElem.src = "";
+                    imgElem.classList.add('d-none');
+                    spanElem.classList.remove('d-none');
+                }
+            }
+
+            // Switch view to print preview
+            document.getElementById('appSection').classList.add('d-none');
+            document.getElementById('printArea').style.display = 'block';
+            window.scrollTo(0, 0);
+        }
+
+        function backToForm() {
+            document.getElementById('printArea').style.display = 'none';
+            document.getElementById('appSection').classList.remove('d-none');
+        }
+
+        function saveAndPrint() {
+            let data = {
+                username: currentUser,
+                nama: document.getElementById('f_nama').value,
+                kecamatan: document.getElementById('f_kecamatan').value,
+                jenisSurvei: document.getElementById('f_jenisSurvei').value,
+                tujuanSurvei: document.getElementById('f_tujuanSurvei').value,
+                jadwal: document.getElementById('f_jadwal').value,
+                anggaranMembiayai: document.getElementById('f_anggaranMembiayai').value,
+                anggaranDiperiksa: document.getElementById('f_anggaranDiperiksa').value,
+                urutanKegiatan: document.getElementById('f_urutanKegiatan').value,
+                pejabatTempat: document.getElementById('f_pejabatTempat').value,
+                foto1: uploadedPhotos[0] || "",
+                foto2: uploadedPhotos[1] || "",
+                foto3: uploadedPhotos[2] || ""
+            };
+
+            showLoading(true);
+            google.script.run
+                .withSuccessHandler(res => {
+                    showLoading(false);
+                    alert(res.message);
+                    window.print();
+                })
+                .saveReport(data);
+        }
     </script>
 </body>
 </html>

@@ -5,488 +5,320 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ALADIN - Aplikasi Laporan Perjadin</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { background-color: #f8f9fa; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        .card { border: none; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        .btn-primary { background-color: #0d6efd; border: none; border-radius: 8px; padding: 10px; }
-        .form-control, .form-select { border-radius: 8px; padding: 10px; border: 1px solid #ced4da; }
-        .form-control:focus, .form-select:focus { box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15); }
-        
-        /* Print Styling - Exact 2 Pages layout */
+        body { background-color: #f8f9fa; font-family: Arial, sans-serif; }
+        .card { border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .print-area { display: none; background: white; width: 210mm; min-height: 297mm; padding: 20mm; margin: auto; }
         @media print {
-            body { background: white; -webkit-print-color-adjust: exact; }
-            .no-print { display: none !important; }
-            .print-container { display: block !important; width: 100%; }
-            .page-break { page-break-after: always; break-after: page; height: 100vh; display: flex; flex-direction: column; justify-content: space-between; }
-            @page { size: A4; margin: 15mm; }
+            body * { visibility: hidden; }
+            .print-area, .print-area * { visibility: visible; }
+            .print-area { position: absolute; left: 0; top: 0; display: block !important; width: 100%; margin: 0; padding: 10mm; }
+            .no-print { display: none; }
         }
-        .print-container { display: none; background: white; color: black; font-size: 12pt; }
-        
-        /* Table styling for print preview matching images */
-        .print-table { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
-        .print-table th, .print-table td { border: 1px solid #000; padding: 6px 8px; vertical-align: top; }
-        .box-section { border: 1px solid #000; margin-bottom: 15px; }
-        .box-header { background-color: #e9ecef !important; border-bottom: 1px solid #000; padding: 6px 10px; font-weight: bold; text-align: center; font-size: 11pt; }
-        .box-body { padding: 10px; min-height: 250px; }
-        .photo-box { border: 1px solid #000; height: 280px; display: flex; align-items: center; justify-content: center; overflow: hidden; margin-bottom: 10px; background: #fff; }
-        .photo-box img { width: 100%; height: 100%; object-fit: contain; }
+        canvas { border: 1px solid #ced4da; border-radius: 6px; width: 100%; height: 150px; background: #fff; }
     </style>
 </head>
-<body>
+<body class="container py-4">
 
-    <!-- LOADING SPINNER -->
-    <div id="loadingOverlay" class="position-fixed top-0 start-0 w-100 h-100 d-none justify-content-center align-items-center bg-white bg-opacity-75" style="z-index: 9999;">
-        <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
-            <span class="visually-hidden">Loading...</span>
-        </div>
-    </div>
-
-    <!-- AUTH SECTION -->
-    <div id="authSection" class="container mt-5 no-print" style="max-width: 450px;">
-        <div class="text-center mb-4">
-            <h2 class="fw-bold text-primary"><i class="fas fa-file-invoice"></i> ALADIN</h2>
-            <p class="text-muted">Aplikasi Laporan Perjadin - BPS Kabupaten Brebes</p>
-        </div>
-
-        <!-- Login Form -->
-        <div id="loginCard" class="card p-4">
-            <h4 class="mb-3 text-center">Login Petugas</h4>
-            <div class="mb-3">
-                <label class="form-label">Username</label>
-                <input type="text" id="loginUsername" class="form-control" placeholder="Masukkan username">
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Password</label>
-                <input type="password" id="loginPassword" class="form-control" placeholder="Masukkan password">
-            </div>
-            <button onclick="handleLogin()" class="btn btn-primary w-100 mb-3">Login</button>
-            <div class="text-center">
-                <small class="text-muted">Belum punya akun? <a href="#" onclick="toggleAuth(true)">Registrasi di sini</a></small>
-            </div>
-        </div>
-
-        <!-- Register Form -->
-        <div id="registerCard" class="card p-4 d-none">
-            <h4 class="mb-3 text-center">Registrasi Petugas</h4>
-            <div class="mb-3">
-                <label class="form-label">Nama Lengkap & Gelar</label>
-                <input type="text" id="regNama" class="form-control" placeholder="Contoh: Budi Santoso, S.ST">
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Username</label>
-                <input type="text" id="regUsername" class="form-control" placeholder="Buat username">
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Password</label>
-                <input type="password" id="regPassword" class="form-control" placeholder="Buat password">
-            </div>
-            <button onclick="handleRegister()" class="btn btn-success w-100 mb-3">Daftar</button>
-            <div class="text-center">
-                <small class="text-muted">Sudah punya akun? <a href="#" onclick="toggleAuth(false)">Login di sini</a></small>
-            </div>
-        </div>
-    </div>
-
-    <!-- MAIN APP SECTION -->
-    <div id="appSection" class="container py-4 d-none no-print" style="max-width: 800px;">
-        <div class="d-flex justify-content-between align-items-center mb-4 bg-white p-3 rounded shadow-sm">
-            <div>
-                <h5 class="mb-0 text-primary fw-bold"><i class="fas fa-file-alt"></i> Buat Laporan Perjadin</h5>
-                <small class="text-muted">Login sebagai: <span id="userDisplayName" class="fw-semibold"></span></small>
-            </div>
-            <button onclick="handleLogout()" class="btn btn-outline-danger btn-sm"><i class="fas fa-sign-out-alt"></i> Logout</button>
-        </div>
-
-        <div class="card p-4 mb-4">
-            <form id="perjadinForm" onsubmit="event.preventDefault(); preparePrintPreview();">
-                <div class="mb-3">
-                    <label class="form-label fw-semibold">Nama Petugas</label>
-                    <input type="text" id="f_nama" class="form-control" required>
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label fw-semibold">Kecamatan Tujuan</label>
-                    <select id="f_kecamatan" class="form-select" required>
-                        <option value="" disabled selected>-- Pilih Kecamatan --</option>
-                        <option value="Margasari">Margasari</option>
-                        <option value="Bumijawa">Bumijawa</option>
-                        <option value="Bojong">Bojong</option>
-                        <option value="Balapulang">Balapulang</option>
-                        <option value="Pagerbarang">Pagerbarang</option>
-                        <option value="Lebaksiu">Lebaksiu</option>
-                        <option value="Jatinegara">Jatinegara</option>
-                        <option value="Kedungbanteng">Kedungbanteng</option>
-                        <option value="Pangkah">Pangkah</option>
-                        <option value="Slawi">Slawi</option>
-                        <option value="Dukuhwaru">Dukuhwaru</option>
-                        <option value="Adiwerna">Adiwerna</option>
-                        <option value="Dukuhturi">Dukuhturi</option>
-                        <option value="Talang">Talang</option>
-                        <option value="Tarub">Tarub</option>
-                        <option value="Kramat">Kramat</option>
-                        <option value="Suradadi">Suradadi</option>
-                        <option value="Warureja">Warureja</option>
-                    </select>
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label fw-semibold">Jenis Survei</label>
-                    <select id="f_jenisSurvei" class="form-select" required>
-                        <option value="" disabled selected>-- Pilih Jenis Survei --</option>
-                        <option value="KSA Padi">KSA Padi</option>
-                        <option value="KSA Jagung">KSA Jagung</option>
-                        <option value="Ubinan Padi">Ubinan Padi</option>
-                        <option value="Ubinan Palawija">Ubinan Palawija</option>
-                        <option value="VPVN Hortikultura">VPVN Hortikultura</option>
-                        <option value="SKB Bulanan">SKB Bulanan</option>
-                        <option value="SKB Tahunan">SKB Tahunan</option>
-                        <option value="Updating DPP UTL">Updating DPP UTL</option>
-                        <option value="TPI">TPI</option>
-                        <option value="LPTB">LPTB</option>
-                        <option value="LTU">LTU</option>
-                        <option value="Perusahaan Kehutanan">Perusahaan Kehutanan</option>
-                        <option value="Survei Kesejahteraan Petani (SKP) 2026">Survei Kesejahteraan Petani (SKP) 2026</option>
-                        <option value="SITASI 2026">SITASI 2026</option>
-                        <option value="SKJG 2026">SKJG 2026</option>
-                    </select>
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label fw-semibold">Tujuan Survei</label>
-                    <select id="f_tujuanSurvei" class="form-select" required>
-                        <option value="" disabled selected>-- Pilih Tujuan Survei --</option>
-                        <option value="Pengumpulan Data Lapangan">Pengumpulan Data Lapangan</option>
-                        <option value="Pengawasan/ Pemeriksaan Lapangan">Pengawasan/ Pemeriksaan Lapangan</option>
-                        <option value="Supervisi Lapangan">Supervisi Lapangan</option>
-                    </select>
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label fw-semibold">Jadwal (Tanggal)</label>
-                    <input type="date" id="f_jadwal" class="form-control" required>
-                </div>
-
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label fw-semibold">Anggaran yang Membiayai</label>
-                        <input type="text" id="f_anggaranMembiayai" class="form-control" value="054" required>
+    <div id="auth-section" class="row justify-content-center">
+        <div class="col-md-5">
+            <div class="card p-4">
+                <h3 class="text-center mb-3">ALADIN</h3>
+                <p class="text-center text-muted">Aplikasi Laporan Perjadin</p>
+                <div id="login-form">
+                    <div class="mb-3">
+                        <label class="form-label">Username</label>
+                        <input type="text" id="log-username" class="form-control" required>
                     </div>
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label fw-semibold">Anggaran yang Diperiksa</label>
-                        <input type="text" id="f_anggaranDiperiksa" class="form-control" value="054" required>
+                    <div class="mb-3">
+                        <label class="form-label">Password</label>
+                        <input type="password" id="log-password" class="form-control" required>
                     </div>
+                    <button class="btn btn-primary w-100" onclick="login()">Login</button>
+                    <p class="text-center mt-3"><a href="#" onclick="toggleAuth(true)">Belum punya akun? Daftar</a></p>
                 </div>
-
-                <div class="mb-3">
-                    <label class="form-label fw-semibold">Tanda Tangan Petugas (Nama/Inisial)</label>
-                    <input type="text" id="f_ttd" class="form-control" placeholder="Tuliskan nama terang/paraf" required>
+                <div id="register-form" style="display: none;">
+                    <div class="mb-3">
+                        <label class="form-label">Nama Lengkap</label>
+                        <input type="text" id="reg-nama" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Username</label>
+                        <input type="text" id="reg-username" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Password</label>
+                        <input type="password" id="reg-password" class="form-control" required>
+                    </div>
+                    <button class="btn btn-success w-100" onclick="register()">Daftar</button>
+                    <p class="text-center mt-3"><a href="#" onclick="toggleAuth(false)">Sudah punya akun? Login</a></p>
                 </div>
-
-                <div class="mb-3">
-                    <label class="form-label fw-semibold">Urutan Kegiatan (Ringkasan Hasil)</label>
-                    <textarea id="f_urutanKegiatan" class="form-control" rows="5" placeholder="Tuliskan urutan kegiatan secara rinci..." required></textarea>
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label fw-semibold">Pejabat dan Tempat yang Dikunjungi</label>
-                    <textarea id="f_pejabatTempat" class="form-control" rows="4" placeholder="Tuliskan pejabat atau lokasi yang dikunjungi..." required></textarea>
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label fw-semibold">Dokumentasi Foto (Maksimal 3 Foto)</label>
-                    <input type="file" id="f_fotoInput" class="form-control mb-2" accept="image/*" onchange="addPhoto(this)">
-                    <small class="text-muted">Foto akan diakumulasikan ke dalam laporan (maks 3 foto).</small>
-                    
-                    <div id="photoPreviewContainer" class="row mt-2 g-2"></div>
-                </div>
-
-                <button type="submit" class="btn btn-primary w-100 py-2 mt-3"><i class="fas fa-print"></i> Preview & Simpan Laporan</button>
-            </form>
+            </div>
         </div>
     </div>
 
-    <!-- PRINT PREVIEW CONTAINER (EXACT 2 PAGES MATCHING IMAGES) -->
-    <div id="printArea" class="print-container">
-        
-        <!-- PAGE 1 -->
-        <div class="page-break">
-            <div>
-                <div class="text-center fw-bold mb-4" style="font-size: 14pt;">LAPORAN KEGIATAN</div>
-                
-                <div class="box-section">
-                    <div class="box-header">A. UMUM</div>
-                    <table class="print-table mb-0" style="border: none;">
-                        <tr>
-                            <td style="width: 15%;">1. Nama</td>
-                            <td id="p_nama" style="width: 35%;"></td>
-                            <td style="width: 25%;">4. Anggaran/Kegiatan yang membiayai</td>
-                            <td id="p_anggaranMembiayai" style="width: 25%;"></td>
-                        </tr>
-                        <tr>
-                            <td>2. Tujuan</td>
-                            <td id="p_tujuan"></td>
-                            <td>5. Anggaran/Kegiatan yang diperiksa</td>
-                            <td id="p_anggaranDiperiksa"></td>
-                        </tr>
-                        <tr>
-                            <td>3. Jadwal</td>
-                            <td id="p_jadwal"></td>
-                            <td>6. Tanda tangan Petugas</td>
-                            <td id="p_ttd"></td>
-                        </tr>
-                    </table>
+    <div id="app-section" class="row justify-content-center" style="display: none;">
+        <div class="col-md-8">
+            <div class="card p-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h3>Form Laporan Perjadin</h3>
+                    <button class="btn btn-sm btn-outline-danger" onclick="logout()">Logout</button>
                 </div>
-
-                <div class="box-section">
-                    <div class="box-header">B. URUTAN KEGIATAN (RINGKASAN HASIL)</div>
-                    <div class="box-body" id="p_urutanKegiatan" style="white-space: pre-line;"></div>
-                </div>
-
-                <div class="box-section mb-0">
-                    <div class="box-header">C. PEJABAT DAN TEMPAT YANG DIKUNJUNGI</div>
-                    <div class="box-body" id="p_pejabatTempat" style="min-height: 120px; white-space: pre-line;"></div>
-                </div>
+                <form id="perjadinForm" onsubmit="generatePrint(event)">
+                    <div class="mb-3">
+                        <label class="form-label">Nama Petugas</label>
+                        <input type="text" id="input-nama" class="form-control" readonly required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Kecamatan Tujuan</label>
+                        <select id="input-kecamatan" class="form-select" required>
+                            <option value="">Pilih Kecamatan</option>
+                            <option>Margasari</option><option>Bumijawa</option><option>Bojong</option>
+                            <option>Balapulang</option><option>Pagerbarang</option><option>Lebaksiu</option>
+                            <option>Jatinegara</option><option>Kedungbanteng</option><option>Pangkah</option>
+                            <option>Slawi</option><option>Dukuhwaru</option><option>Adiwerna</option>
+                            <option>Dukuhturi</option><option>Talang</option><option>Tarub</option>
+                            <option>Kramat</option><option>Suradadi</option><option>Warureja</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Jenis Survei</label>
+                        <select id="input-jenis" class="form-select" required>
+                            <option value="">Pilih Jenis Survei</option>
+                            <option>KSA Padi</option><option>KSA Jagung</option><option>Ubinan Padi</option>
+                            <option>Ubinan Palawija</option><option>VPVN Hortikultura</option><option>SKB Bulanan</option>
+                            <option>SKB Tahunan</option><option>Updating DPP UTL</option><option>TPI</option>
+                            <option>LPTB</option><option>LTU</option><option>Perusahaan Kehutanan</option>
+                            <option>Survei Kesejahteraan Petani (SKP) 2026</option><option>SITASI 2026</option><option>SKJG 2026</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Tujuan Survei</label>
+                        <select id="input-tujuan" class="form-select" required>
+                            <option value="">Pilih Tujuan Survei</option>
+                            <option>Pengumpulan Data Lapangan</option>
+                            <option>Pengawasan/ Pemeriksaan Lapangan</option>
+                            <option>Supervisi Lapangan</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Jadwal</label>
+                        <input type="date" id="input-jadwal" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Anggaran/kegiatan yang membiayai</label>
+                        <input type="text" id="input-membiayai" class="form-control" value="054" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Anggaran/kegiatan yang diperiksa</label>
+                        <input type="text" id="input-diperiksa" class="form-control" value="054" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Urutan Kegiatan</label>
+                        <textarea id="input-urutan" class="form-control" rows="3" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Pejabat dan tempat yang dikunjungi</label>
+                        <textarea id="input-pejabat" class="form-control" rows="3" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Tanda Tangan Petugas</label>
+                        <canvas id="ttdCanvas"></canvas>
+                        <button type="button" class="btn btn-sm btn-secondary mt-1" onclick="clearTtd()">Reset Tanda Tangan</button>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Dokumentasi (Foto)</label>
+                        <input type="file" id="input-foto" class="form-control" accept="image/*" onchange="previewImage(event)">
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Cetak & Simpan Laporan</button>
+                </form>
             </div>
-            
-            <div class="text-end text-muted" style="font-size: 10pt;">Halaman 1 dari 2</div>
         </div>
+    </div>
 
-        <!-- PAGE 2 (NO CENTER LINE) -->
+    <div id="print-preview" class="print-area">
         <div style="height: 100vh; display: flex; flex-direction: column; justify-content: space-between;">
             <div>
-                <div class="box-section">
-                    <div class="box-header">D. DOKUMENTASI</div>
-                    <div style="padding: 10px;">
-                        <div class="photo-box"><span id="p_no_foto1" class="text-muted">Belum ada foto 1</span><img id="p_img1" class="d-none"></div>
-                        <div class="photo-box"><span id="p_no_foto2" class="text-muted">Belum ada foto 2</span><img id="p_img2" class="d-none"></div>
-                        <div class="photo-box mb-0"><span id="p_no_foto3" class="text-muted">Belum ada foto 3</span><img id="p_img3" class="d-none"></div>
+                <h2 id="p-title" class="text-center mb-4 text-uppercase">LAPORAN PERJADIN</h2>
+                <hr>
+                <table class="table table-bordered">
+                    <tr><th style="width: 35%;">Nama Petugas</th><td id="p-nama"></td></tr>
+                    <tr><th>Kecamatan Tujuan</th><td id="p-kecamatan"></td></tr>
+                    <tr><th>Jenis Survei</th><td id="p-jenis"></td></tr>
+                    <tr><th>Tujuan Survei</th><td id="p-tujuan"></td></tr>
+                    <tr><th>Jadwal Pelaksanaan</th><td id="p-jadwal"></td></tr>
+                    <tr><th>Anggaran Membiayai</th><td id="p-membiayai"></td></tr>
+                    <tr><th>Anggaran Diperiksa</th><td id="p-diperiksa"></td></tr>
+                </table>
+            </div>
+            <div class="text-end text-muted"><small>Halaman 1 dari 2</small></div>
+        </div>
+        
+        <div style="page-break-before: always; height: 100vh; display: flex; flex-direction: column; justify-content: space-between; padding-top: 20mm;">
+            <div>
+                <h4>Uraian Kegiatan & Dokumentasi</h4>
+                <hr>
+                <div class="mb-3">
+                    <strong>Urutan Kegiatan:</strong>
+                    <p id="p-urutan" style="white-space: pre-line;"></p>
+                </div>
+                <div class="mb-3">
+                    <strong>Pejabat dan Tempat yang Dikunjungi:</strong>
+                    <p id="p-pejabat" style="white-space: pre-line;"></p>
+                </div>
+                <div class="row mt-4">
+                    <div class="col-6 text-center">
+                        <p>Dokumentasi Lapangan</p>
+                        <img id="p-foto" src="" style="max-width: 100%; max-height: 200px; display:none;" class="border p-1">
+                    </div>
+                    <div class="col-6 text-center">
+                        <p>Tanda Tangan Petugas</p>
+                        <img id="p-ttd" src="" style="max-height: 100px; display:none;">
                     </div>
                 </div>
             </div>
-            
-            <div class="d-flex justify-content-between align-items-center no-print mt-3">
-                <button onclick="backToForm()" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Kembali Edit</button>
-                <button onclick="saveAndPrint()" class="btn btn-success"><i class="fas fa-save"></i> Simpan ke Spreadsheet & Cetak / PDF</button>
+            <div class="d-flex justify-content-between align-items-center no-print mt-4">
+                <button class="btn btn-secondary" onclick="closePrint()">Kembali ke Form</button>
+                <button class="btn btn-success" onclick="window.print()">Cetak / Simpan PDF</button>
             </div>
-            
-            <div class="text-end text-muted" style="font-size: 10pt;">Halaman 2 dari 2</div>
+            <div class="text-end text-muted"><small>Halaman 2 dari 2</small></div>
         </div>
-
     </div>
 
-    <!-- JS SCRIPTS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyJ2hUtSm7jwz_xWMkhhMLlNlzRMOXqLipD5JI0mJFl0JSiV2uwXHO9qYa7IkqWwE5p/exec";
-        let currentUser = null;
-        let uploadedPhotos = []; // Accumulative photos max 3
+<script>
+    const SCRIPT_URL = 'AKfycbwvYYvwTM0Bb8o03H0cLRWT0O5FJpecPTK9JsYv50tW62RGSuueIHCt0F-fewAqiWkR';
 
-        function showLoading(show) {
-            document.getElementById('loadingOverlay').classList.toggle('d-none', !show);
-            document.getElementById('loadingOverlay').classList.toggle('d-flex', show);
+    // Inisialisasi Tanda Tangan Canvas
+    const canvas = document.getElementById('ttdCanvas');
+    const ctx = canvas.getContext('2d');
+    let painting = false;
+
+    function startPosition(e) { painting = true; draw(e); }
+    function finishedPosition() { painting = false; ctx.beginPath(); }
+    function draw(e) {
+        if (!painting) return;
+        ctx.lineWidth = 2;
+        ctx.lineCap = 'round';
+        ctx.strokeStyle = '#000';
+        const rect = canvas.getBoundingClientRect();
+        const x = (e.clientX || e.touches[0].clientX) - rect.left;
+        const y = (e.clientY || e.touches[0].clientY) - rect.top;
+        ctx.lineTo(x, y);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+    }
+    canvas.addEventListener('mousedown', startPosition);
+    canvas.addEventListener('mouseup', finishedPosition);
+    canvas.addEventListener('mousemove', draw);
+    canvas.addEventListener('touchstart', startPosition);
+    canvas.addEventListener('touchend', finishedPosition);
+    canvas.addEventListener('touchmove', draw);
+
+    function clearTtd() { ctx.clearRect(0, 0, canvas.width, canvas.height); }
+
+    let base64Foto = "";
+    function previewImage(event) {
+        const reader = new FileReader();
+        reader.onload = function() { base64Foto = reader.result; }
+        reader.readAsDataURL(event.target.files[0]);
+    }
+
+    function toggleAuth(isRegister) {
+        document.getElementById('login-form').style.display = isRegister ? 'none' : 'block';
+        document.getElementById('register-form').style.display = isRegister ? 'block' : 'none';
+    }
+
+    function login() {
+        const u = document.getElementById('log-username').value;
+        const p = document.getElementById('log-password').value;
+        fetch(`${SCRIPT_URL}?action=login&username=${u}&password=${p}`)
+        .then(res => res.json()).then(data => {
+            if(data.status === 'success') {
+                localStorage.setItem('aladin_user', data.nama);
+                initApp(data.nama);
+            } else { alert(data.message); }
+        });
+    }
+
+    function register() {
+        const nama = document.getElementById('reg-nama').value;
+        const u = document.getElementById('reg-username').value;
+        const p = document.getElementById('reg-password').value;
+        fetch(`${SCRIPT_URL}?action=register&namaLengkap=${nama}&username=${u}&password=${p}`)
+        .then(res => res.json()).then(data => {
+            alert(data.message);
+            if(data.status === 'success') toggleAuth(false);
+        });
+    }
+
+    function logout() {
+        localStorage.removeItem('aladin_user');
+        location.reload();
+    }
+
+    function initApp(nama) {
+        document.getElementById('auth-section').style.display = 'none';
+        document.getElementById('app-section').style.display = 'flex';
+        document.getElementById('input-nama').value = nama;
+    }
+
+    window.onload = function() {
+        const savedUser = localStorage.getItem('aladin_user');
+        if(savedUser) initApp(savedUser);
+    }
+
+    function generatePrint(e) {
+        e.preventDefault();
+        const jenis = document.getElementById('input-jenis').value;
+        const tujuan = document.getElementById('input-tujuan').value;
+        
+        document.getElementById('p-title').innerText = `${tujuan} - ${jenis}`;
+        document.getElementById('p-nama').innerText = document.getElementById('input-nama').value;
+        document.getElementById('p-kecamatan').innerText = document.getElementById('input-kecamatan').value;
+        document.getElementById('p-jenis').innerText = jenis;
+        document.getElementById('p-tujuan').innerText = tujuan;
+        document.getElementById('p-jadwal').innerText = document.getElementById('input-jadwal').value;
+        document.getElementById('p-membiayai').innerText = document.getElementById('input-membiayai').value;
+        document.getElementById('p-diperiksa').innerText = document.getElementById('input-diperiksa').value;
+        document.getElementById('p-urutan').innerText = document.getElementById('input-urutan').value;
+        document.getElementById('p-pejabat').innerText = document.getElementById('input-pejabat').value;
+
+        const ttdData = canvas.toDataURL();
+        document.getElementById('p-ttd').src = ttdData;
+        document.getElementById('p-ttd').style.display = 'inline-block';
+
+        if(base64Foto) {
+            document.getElementById('p-foto').src = base64Foto;
+            document.getElementById('p-foto').style.display = 'inline-block';
         }
 
-        function toggleAuth(isRegister) {
-            document.getElementById('loginCard').classList.toggle('d-none', isRegister);
-            document.getElementById('registerCard').classList.toggle('d-none', !isRegister);
-        }
+        // Kirim data ke Google Sheets
+        const payload = {
+            nama: document.getElementById('input-nama').value,
+            kecamatan: document.getElementById('input-kecamatan').value,
+            jenisSurvei: jenis,
+            tujuanSurvei: tujuan,
+            jadwal: document.getElementById('input-jadwal').value,
+            anggaranMembiayai: document.getElementById('input-membiayai').value,
+            anggaranDiperiksa: document.getElementById('input-diperiksa').value,
+            urutanKegiatan: document.getElementById('input-urutan').value,
+            pejabatDikunjungi: document.getElementById('input-pejabat').value,
+            tandaTangan: ttdData,
+            dokumentasi: base64Foto
+        };
 
-        function handleRegister() {
-            let namaLengkap = document.getElementById('regNama').value.trim();
-            let username = document.getElementById('regUsername').value.trim();
-            let password = document.getElementById('regPassword').value.trim();
+        fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload) })
+        .then(res => res.json()).then(res => console.log(res));
 
-            if (!namaLengkap || !username || !password) {
-                alert("Semua kolom registrasi harus diisi!");
-                return;
-            }
+        document.getElementById('app-section').style.display = 'none';
+        document.getElementById('print-preview').style.display = 'block';
+    }
 
-            let payload = {
-                namaLengkap: namaLengkap,
-                username: username,
-                password: password
-            };
-
-            showLoading(true);
-            google.script.run
-                .withSuccessHandler(res => {
-                    showLoading(false);
-                    alert(res.message);
-                    if (res.success) toggleAuth(false);
-                })
-                .withFailureHandler(err => {
-                    showLoading(false);
-                    alert("Terjadi kesalahan: " + err.message);
-                })
-                .registerUser(payload);
-        }
-
-        function handleLogin() {
-            let username = document.getElementById('loginUsername').value.trim();
-            let password = document.getElementById('loginPassword').value.trim();
-
-            if (!username || !password) {
-                alert("Masukkan username dan password!");
-                return;
-            }
-
-            let payload = {
-                username: username,
-                password: password
-            };
-
-            showLoading(true);
-            google.script.run
-                .withSuccessHandler(res => {
-                    showLoading(false);
-                    if (res.success) {
-                        currentUser = username;
-                        document.getElementById('userDisplayName').innerText = res.namaLengkap;
-                        document.getElementById('f_nama').value = res.namaLengkap;
-                        document.getElementById('authSection').classList.add('d-none');
-                        document.getElementById('appSection').classList.remove('d-none');
-                    } else {
-                        alert(res.message);
-                    }
-                })
-                .withFailureHandler(err => {
-                    showLoading(false);
-                    alert("Terjadi kesalahan: " + err.message);
-                })
-                .loginUser(payload);
-        }
-
-        function handleLogout() {
-            currentUser = null;
-            document.getElementById('authSection').classList.remove('d-none');
-            document.getElementById('appSection').classList.add('d-none');
-            document.getElementById('perjadinForm').reset();
-            uploadedPhotos = [];
-            renderPhotoPreviews();
-        }
-
-        // Photo Accumulator function (Max 3)
-        function addPhoto(input) {
-            if (input.files && input.files[0]) {
-                if (uploadedPhotos.length >= 3) {
-                    alert("Maksimal 3 foto dokumentasi!");
-                    input.value = "";
-                    return;
-                }
-
-                let reader = new FileReader();
-                reader.onload = function(e) {
-                    uploadedPhotos.push(e.target.result);
-                    renderPhotoPreviews();
-                    input.value = ""; // Reset input file
-                }
-                reader.readAsDataURL(input.files[0]);
-            }
-        }
-
-        function removePhoto(index) {
-            uploadedPhotos.splice(index, 1);
-            renderPhotoPreviews();
-        }
-
-        function renderPhotoPreviews() {
-            let container = document.getElementById('photoPreviewContainer');
-            container.innerHTML = "";
-            uploadedPhotos.forEach((photo, index) => {
-                let col = document.createElement('div');
-                col.className = "col-4 position-relative";
-                col.innerHTML = `
-                    <div class="border rounded p-1 text-center bg-white" style="height: 100px;">
-                        <img src="${photo}" class="w-100 h-100 object-fit-cover rounded">
-                        <button type="button" class="position-absolute top-0 end-0 btn btn-danger btn-sm rounded-circle p-0" style="width: 24px; height: 24px; line-height: 22px;" onclick="removePhoto(${index})">&times;</button>
-                    </div>
-                `;
-                container.appendChild(col);
-            });
-        }
-
-        function preparePrintPreview() {
-            let nama = document.getElementById('f_nama').value;
-            let kecamatan = document.getElementById('f_kecamatan').value;
-            let jenisSurvei = document.getElementById('f_jenisSurvei').value;
-            let tujuanSurvei = document.getElementById('f_tujuanSurvei').value;
-            let jadwal = document.getElementById('f_jadwal').value;
-            let anggaranMembiayai = document.getElementById('f_anggaranMembiayai').value;
-            let anggaranDiperiksa = document.getElementById('f_anggaranDiperiksa').value;
-            let ttd = document.getElementById('f_ttd').value;
-            let urutanKegiatan = document.getElementById('f_urutanKegiatan').value;
-            let pejabatTempat = document.getElementById('f_pejabatTempat').value;
-
-            // Gabungan tujuan survei dan jenis survei sesuai instruksi
-            let combinedTujuan = `${tujuanSurvei} - ${jenisSurvei} di Kecamatan ${kecamatan}`;
-
-            // Fill Print Template
-            document.getElementById('p_nama').innerText = nama;
-            document.getElementById('p_tujuan').innerText = combinedTujuan;
-            document.getElementById('p_jadwal').innerText = jadwal;
-            document.getElementById('p_anggaranMembiayai').innerText = anggaranMembiayai;
-            document.getElementById('p_anggaranDiperiksa').innerText = anggaranDiperiksa;
-            document.getElementById('p_ttd').innerText = ttd;
-            document.getElementById('p_urutanKegiatan').innerText = urutanKegiatan;
-            document.getElementById('p_pejabatTempat').innerText = pejabatTempat;
-
-            // Render Photos in Print Area
-            for (let i = 1; i <= 3; i++) {
-                let imgElem = document.getElementById(`p_img${i}`);
-                let spanElem = document.getElementById(`p_no_foto${i}`);
-                if (uploadedPhotos[i - 1]) {
-                    imgElem.src = uploadedPhotos[i - 1];
-                    imgElem.classList.remove('d-none');
-                    spanElem.classList.add('d-none');
-                } else {
-                    imgElem.src = "";
-                    imgElem.classList.add('d-none');
-                    spanElem.classList.remove('d-none');
-                }
-            }
-
-            // Switch view to print preview
-            document.getElementById('appSection').classList.add('d-none');
-            document.getElementById('printArea').style.display = 'block';
-            window.scrollTo(0, 0);
-        }
-
-        function backToForm() {
-            document.getElementById('printArea').style.display = 'none';
-            document.getElementById('appSection').classList.remove('d-none');
-        }
-
-        function saveAndPrint() {
-            let data = {
-                username: currentUser,
-                nama: document.getElementById('f_nama').value,
-                kecamatan: document.getElementById('f_kecamatan').value,
-                jenisSurvei: document.getElementById('f_jenisSurvei').value,
-                tujuanSurvei: document.getElementById('f_tujuanSurvei').value,
-                jadwal: document.getElementById('f_jadwal').value,
-                anggaranMembiayai: document.getElementById('f_anggaranMembiayai').value,
-                anggaranDiperiksa: document.getElementById('f_anggaranDiperiksa').value,
-                urutanKegiatan: document.getElementById('f_urutanKegiatan').value,
-                pejabatTempat: document.getElementById('f_pejabatTempat').value,
-                foto1: uploadedPhotos[0] || "",
-                foto2: uploadedPhotos[1] || "",
-                foto3: uploadedPhotos[2] || ""
-            };
-
-            showLoading(true);
-            google.script.run
-                .withSuccessHandler(res => {
-                    showLoading(false);
-                    alert(res.message);
-                    window.print();
-                })
-                .withFailureHandler(err => {
-                    showLoading(false);
-                    alert("Terjadi kesalahan saat menyimpan: " + err.message);
-                })
-                .saveReport(data);
-        }
-    </script>
+    function closePrint() {
+        document.getElementById('print-preview').style.display = 'none';
+        document.getElementById('app-section').style.display = 'flex';
+    }
+</script>
 </body>
 </html>
